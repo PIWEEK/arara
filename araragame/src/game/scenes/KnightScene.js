@@ -1,5 +1,7 @@
 import { Scene } from 'phaser'
 
+var keySpace;
+var tween;
 
 export default class KnightScene extends Scene {
     constructor() {
@@ -8,10 +10,10 @@ export default class KnightScene extends Scene {
 
     create() {
         this.add.image(400, 300, 'sky')
-
+        keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         var helmet = this.add.image(100, 400, 'helmet')
 
-        this.tweens.add({
+        tween = this.tweens.add({
             targets: helmet,
             props: {
                 x: { value: 600, duration: 3000 },
@@ -22,5 +24,15 @@ export default class KnightScene extends Scene {
             repeat: 0,
             delay: 2000,
         })
+
+        tween.pause();
+    }
+
+    update() {
+        if (keySpace.isDown) {
+            tween.resume();
+        } else {
+            tween.pause();
+        }
     }
 }
