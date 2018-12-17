@@ -1,17 +1,17 @@
-# Arara game
+# Phaser 3 Webpack Project Template
 
-## Build Setup
+A Phaser 3 Project Template
 
-``` bash
-# install dependencies
-npm install
+### Requirements
 
-# serve with live reloading at localhost:8080
-npm run dev
+We need [Node.js](https://nodejs.org) to install and run scripts.
 
-# build for production with transpilation / minification
-npm run build
+## Install and run
 
-# serve your production build at localhost:5000
-npm run serve
-```
+Run next commands in your terminal:
+
+| Command | Description |
+|---------|-------------|
+| `npm install` | Install dependencies and launch browser with examples.|
+| `npm start` | Launch browser to show the examples. <br> Press `Ctrl + c` to kill **http-server** process. |
+=======
