@@ -1,6 +1,3 @@
-import random
-import time
-
 import speech_recognition as sr
 
 
@@ -37,18 +34,16 @@ def recognize_speech_from_mic(recognizer, microphone):
         "transcription_sphinx": None
     }
 
-    # try recognizing the speech in the recording
-    # if a RequestError or UnknownValueError exception is caught,
-    #     update the response object accordingly
+
     try:
         response["transcription_google"] = recognizer.recognize_google(audio)
-        print("Google thinks you said " + recognizer.recognize_google(audio))
+        print("Google thinks you said {}".format(response["transcription_google"]))
     except sr.RequestError:
-        # API was unreachable or unresponsive
+        print("Google RequestError")
         response["success"] = False
         response["errors"].append("API unavailable")
     except sr.UnknownValueError:
-        # speech was unintelligible
+        print("Google Unable to recognize speech")
         response["errors"].append("Unable to recognize speech")
 
 
