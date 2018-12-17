@@ -2,6 +2,7 @@ import Phaser from 'phaser'
 import BootScene from './scenes/BootScene'
 import SplashScene from './scenes/SplashScene'
 import MenuScene from './scenes/MenuScene'
+import KnightScene from './scenes/KnightScene'
 
 
 function launch() {
@@ -17,7 +18,7 @@ function launch() {
         debug: false
       }
     },
-    scene: [BootScene, SplashScene, MenuScene]
+    scene: [BootScene, SplashScene, MenuScene, KnightScene]
   })
 }
 
