@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "48ee8900da345254e20747f98dc020383e6cbaa1dc0c6a1a7cc446f1f7be71a9"
+            "sha256": "4c51d6d6121926d8fd8560cd6b4e5454973da7fee1027173f802990c93cbd11f"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,6 +16,10 @@
         ]
     },
     "default": {
+        "pocketsphinx": {
+            "editable": true,
+            "path": "./pocketsphinx-python"
+        },
         "speechrecognition": {
             "hashes": [
                 "sha256:4d8f73a0c05ec70331c3bacaa89ecc06dfa8d9aba0899276664cda06ab597e8e"

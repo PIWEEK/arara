@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 speechrecognition = "*"
+pocketsphinx = {editable = true,path = "./pocketsphinx-python"}
 
 [dev-packages]
 pyaudio = "*"
