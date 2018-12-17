@@ -22,7 +22,7 @@ export default class KnightScene extends Scene {
             ease: 'Sine.easeInOut',
             yoyo: false,
             repeat: 0,
-            delay: 2000,
+            delay: 0,
         })
 
         tween.pause();
