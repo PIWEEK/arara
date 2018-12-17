@@ -1,4 +1,21 @@
+import argparse
 import speech_recognition as sr
+
+
+class RecognitionException(Exception):
+    pass
+
+
+def recognize_sphinx(recognizer, audio):
+    # recognize speech using Sphinx
+    try:
+        transcription = recognizer.recognize_sphinx(audio, language='es-ES')
+    except sr.UnknownValueError:
+        raise RecognitionException("Sphinx could not understand audio")
+    except sr.RequestError as e:
+        raise RecognitionException("Sphinx error; {0}".format(e))
+
+    return transcription
 
 
 def recognize_speech_from_mic(recognizer, microphone):
@@ -23,67 +40,57 @@ def recognize_speech_from_mic(recognizer, microphone):
     # adjust the recognizer sensitivity to ambient noise and record audio
     # from the microphone
     with microphone as source:
+        print('Wait a second...')
         recognizer.adjust_for_ambient_noise(source)
-        audio = recognizer.listen(source)
+
+        print('Speak!')
+        audio = recognizer.listen(source, phrase_time_limit=3)
 
     # set up the response object
     response = {
         "success": True,
         "errors": [],
-        "transcription_google": None,
-        "transcription_sphinx": None
+        "transcription": None
     }
 
-
     try:
-        response["transcription_google"] = recognizer.recognize_google(audio)
-        print("Google thinks you said {}".format(response["transcription_google"]))
-    except sr.RequestError:
-        print("Google RequestError")
-        response["success"] = False
-        response["errors"].append("API unavailable")
-    except sr.UnknownValueError:
-        print("Google Unable to recognize speech")
-        response["errors"].append("Unable to recognize speech")
-
-
-    # recognize speech using Sphinx
-    try:
-        response["transcription_sphinx"] = recognizer.recognize_sphinx(audio)
-        print("Sphinx thinks you said " + recognizer.recognize_sphinx(audio))
-    except sr.UnknownValueError:
-        print("Sphinx could not understand audio")
-        response["success"] = False
-        response["errors"].append("Sphinx could not understand audio")
-    except sr.RequestError as e:
-        print("Sphinx error; {0}".format(e))
-        response["errors"].append("Sphinx error; {0}".format(e))
+        response["transcription"] = recognize_sphinx(recognizer, audio)
+    except RecognitionException as e:
+        response['errors'].append(e)
 
     return response
 
 
-if __name__ == "__main__":
+def main():
     recognizer = sr.Recognizer()
-    microphone = sr.Microphone()
+    microphone = sr.Microphone(sample_rate=16000)
 
-    instructions = "Tell me something.."
+    print("Tell me something..")
 
-    # show instructions and wait 3 seconds before starting the game
-    print(instructions)
-
-    while True:
-        print('Speak!')
+    if arg_options.sphinx:
         guess = recognize_speech_from_mic(recognizer, microphone)
+    #
+    # if arg_options.google:
+    #     guess = recognize_speech_from_mic(recognizer, microphone)
 
-        if not guess["success"]:
-            break
-        print("I didn't catch that. What did you say?\n")
+    if guess["errors"]:
+        print("ERROR: {}".format(guess["errors"]))
 
-        # if there was an error, stop the game
-        if guess["errors"]:
-            print("ERROR: {}".format(guess["errors"]))
-            break
+    print("You said according to: {}".format(
+        guess["transcription"]))
 
-        # show the user the transcription
-        print("You said according Google: {}".format(guess["transcription_google"]))
-        print("You said according Sphinx: {}".format(guess["transcription_sphinx"]))
+
+def get_parser():
+    parser = argparse.ArgumentParser(
+        description='Command line to test recognize speech')
+    parser.add_argument("--sphinx", action='store_true', help="Use pocketsphinx")
+    parser.add_argument("--google", action='store_true', help="Use google")
+
+    return parser
+
+
+if __name__ == "__main__":
+    parser = get_parser()
+    arg_options = parser.parse_args()
+
+    main()
