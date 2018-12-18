@@ -7,10 +7,10 @@ export default class MenuScene extends Scene {
   }
 
   create () {
-    this.add.image(400, 300, 'sky')
+    this.add.image(0, 0, 'sky').setOrigin(0, 0)
 
     var context = this
-    var sprite = this.add.sprite(400, 300, 'testButton').setInteractive();
+    var sprite = this.add.sprite(0, 0, 'testButton').setOrigin(0, 0).setInteractive();
 
     sprite.on('pointerdown', function(pointer) {
         this.setTint(0xff0000)
