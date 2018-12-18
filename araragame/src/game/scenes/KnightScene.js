@@ -13,6 +13,7 @@ export default class KnightScene extends Scene {
     create() {
         this.add.image(0, 0, 'sky').setOrigin(0, 0)
         keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+<<<<<<< HEAD
 
         var helmet = this.add.image(100, 400, 'helmet').setOrigin(0, 0)
         
@@ -27,6 +28,9 @@ export default class KnightScene extends Scene {
         })
         helmetParticlesEmitter.startFollow(helmet);
         helmetParticlesEmitter.enabled = false
+=======
+        var helmet = this.add.image(0, 0, 'helmet').setOrigin(0, 0)
+>>>>>>> 7c65384969025aab217f399667bc85e199abb2ac
 
         tween = this.tweens.add({
             targets: helmet,
