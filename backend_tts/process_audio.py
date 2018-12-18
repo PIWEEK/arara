@@ -18,7 +18,19 @@ def recognize_sphinx(recognizer, audio):
     return transcription
 
 
-def recognize_speech_from_mic(recognizer, microphone):
+def recognize_google(recognizer, audio):
+    # recognize speech using Google
+    try:
+        transcription = recognizer.recognize_google(audio, language='es-ES')
+    except sr.UnknownValueError:
+        raise RecognitionException("Google could not understand audio")
+    except sr.RequestError as e:
+        raise RecognitionException("Google error; {0}".format(e))
+
+    return transcription
+
+
+def recognize_speech_from_mic(recognizer, provider, microphone):
     """Transcribe speech from recorded from `microphone`.
 
     Returns a dictionary with three keys:
@@ -53,8 +65,15 @@ def recognize_speech_from_mic(recognizer, microphone):
         "transcription": None
     }
 
+    if provider == 'sphinx':
+        recognizer_func = recognize_sphinx
+    elif provider == 'google':
+        recognizer_func = recognize_google
+    else:
+        raise RecognitionException('Provider not selected')
+
     try:
-        response["transcription"] = recognize_sphinx(recognizer, audio)
+        response["transcription"] = recognizer_func(recognizer, audio)
     except RecognitionException as e:
         response['errors'].append(e)
 
@@ -67,11 +86,7 @@ def main():
 
     print("Tell me something..")
 
-    if arg_options.sphinx:
-        guess = recognize_speech_from_mic(recognizer, microphone)
-    #
-    # if arg_options.google:
-    #     guess = recognize_speech_from_mic(recognizer, microphone)
+    guess = recognize_speech_from_mic(recognizer, arg_options.provider, microphone)
 
     if guess["errors"]:
         print("ERROR: {}".format(guess["errors"]))
@@ -83,8 +98,7 @@ def main():
 def get_parser():
     parser = argparse.ArgumentParser(
         description='Command line to test recognize speech')
-    parser.add_argument("--sphinx", action='store_true', help="Use pocketsphinx")
-    parser.add_argument("--google", action='store_true', help="Use google")
+    parser.add_argument("--provider", help="Use sphinx or google")
 
     return parser
 
