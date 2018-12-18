@@ -28,5 +28,6 @@ export default {
 .placeholder {
   font-size: 2rem;
   font-family: 'Courier New', Courier, monospace;
+  align-self: center;
 }
 </style>

@@ -11,10 +11,11 @@ export default class KnightScene extends Scene {
     }
 
     create() {
-        this.add.image(400, 300, 'sky')
+        this.add.image(0, 0, 'sky').setOrigin(0, 0)
         keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        var helmet = this.add.image(100, 400, 'helmet')
-        
+
+        var helmet = this.add.image(0, 0, 'helmet').setOrigin(0, 0)
+
         // Add particles to helmet
         helmetParticles = this.add.particles('red');
         helmetParticlesEmitter = helmetParticles.createEmitter({
