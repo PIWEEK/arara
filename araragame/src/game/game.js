@@ -3,6 +3,7 @@ import BootScene from './scenes/BootScene'
 import SplashScene from './scenes/SplashScene'
 import MenuScene from './scenes/MenuScene'
 import KnightScene from './scenes/KnightScene'
+import DragonScene from './scenes/DragonScene'
 
 
 function launch() {
@@ -14,11 +15,11 @@ function launch() {
     physics: {
       default: 'arcade',
       arcade: {
-        gravity: { y: 300 },
+        gravity: { y: 0 },
         debug: false
       }
     },
-    scene: [BootScene, SplashScene, MenuScene, KnightScene]
+    scene: [BootScene, SplashScene, MenuScene, KnightScene, DragonScene]
   })
 }
 

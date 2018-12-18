@@ -11,6 +11,7 @@ export default class MenuScene extends Scene {
 
     var context = this
     var sprite = this.add.sprite(0, 0, 'testButton').setOrigin(0, 0).setInteractive();
+    var sprite2 = this.add.sprite(0, 300, 'testButton').setOrigin(0, 0).setInteractive();
 
     sprite.on('pointerdown', function(pointer) {
         this.setTint(0xff0000)
@@ -23,6 +24,10 @@ export default class MenuScene extends Scene {
     sprite.on('pointerup', function(pointer) {
         this.clearTint();
         context.scene.start('KnightScene')
+    })
+
+    sprite2.on('pointerup', function(pointer) {
+        context.scene.start('DragonScene')
     })
 
 

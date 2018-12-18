@@ -38,6 +38,10 @@ export default class KnightScene extends Scene {
             yoyo: false,
             repeat: 0,
             delay: 0,
+            onComplete: function () {
+                var parentScene = this.parent.scene
+                parentScene.scene.start('DragonScene')
+            }
         })
 
         tween.pause();
