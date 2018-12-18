@@ -16,14 +16,21 @@ class KnightController {
 
     cover() {
         this.shieldUp = true;
-        this.sprite.setTint(0x0000ff);
     }
 
     uncover() {
-        this.shieldUp = false;
-        this.sprite.clearTint();
+         setTimeout(function() {
+            this.shieldUp = false;
+        }.bind(this), 2000)
     }
 
+    impacted() {
+        this.sprite.setTint(0xff0000)
+
+        setTimeout(function () {
+            this.sprite.clearTint();
+        }.bind(this), 1000)
+    }
 }
 
 export default class DragonScene extends Scene {
@@ -51,12 +58,13 @@ export default class DragonScene extends Scene {
         }
 
         // Knight shield controller
-        if(keySpace.isDown) {
+        if (keySpace.isDown) {
             knightController.cover()
-        } else {
-            knightController.uncover()
         }
 
+        if (keySpace.isUp) {
+            knightController.uncover();
+        }
     }
 
     createNewFireBall() {
@@ -68,8 +76,8 @@ export default class DragonScene extends Scene {
     hitKnight(fireball, knight) {
         if (knightController.shieldUp) {
             console.log('blocked!!!');
-        } else
-        {
+        } else {
+            knightController.impacted(knight)
             console.log('hit!!')
         }
 
