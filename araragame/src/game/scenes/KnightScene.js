@@ -1,7 +1,9 @@
 import { Scene } from 'phaser'
 
-var keySpace;
-var tween;
+let keySpace;
+let tween;
+let helmetParticles;
+let helmetParticlesEmitter;
 
 export default class KnightScene extends Scene {
     constructor() {
@@ -14,14 +16,16 @@ export default class KnightScene extends Scene {
         var helmet = this.add.image(100, 400, 'helmet')
         
         // Add particles to helmet
-        let particles = this.add.particles('fireblob');
-        let emitter = particles.createEmitter({
+        helmetParticles = this.add.particles('red');
+        helmetParticlesEmitter = helmetParticles.createEmitter({
             speed: 100,
             scale: { start: 1, end: 0 },
             blendMode: 'ADD',
-            lifespan: 500
+            lifespan: 1000,
+            y: 100
         })
-        emitter.startFollow(helmet);
+        helmetParticlesEmitter.startFollow(helmet);
+        helmetParticlesEmitter.enabled = false
 
         tween = this.tweens.add({
             targets: helmet,
@@ -41,7 +45,9 @@ export default class KnightScene extends Scene {
     update() {
         if (keySpace.isDown) {
             tween.resume();
+            helmetParticlesEmitter.on = true
         } else {
+            helmetParticlesEmitter.on = false
             tween.pause();
         }
     }
