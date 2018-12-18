@@ -23,6 +23,17 @@ Backend “Speech To Text” which process received audio.
   $ pipenv shell
 ```
 
+
+## Test commands
+
+Execute the following command with virtualenv activated:
+
+```
+  $ python process_audio.py --provider google
+  $ python process_audio.py --provider sphinx
+```
+
+
 ## Install spanish models to pocketsphinx-python
 
 - Download files from https://sourceforge.net/projects/cmusphinx/files/Acoustic%20and%20Language%20Models/Spanish/
