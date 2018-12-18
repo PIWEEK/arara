@@ -8,8 +8,8 @@ import KnightScene from './scenes/KnightScene'
 function launch() {
   new Phaser.Game({
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    // width: window.innerWidth,
+    // height: window.innerHeight,
     parent: 'game-container',
     physics: {
       default: 'arcade',
