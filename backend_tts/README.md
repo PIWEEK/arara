@@ -7,9 +7,10 @@ Backend “Speech To Text” which process received audio.
 
 ```
   $ brew install portaudio
+  $ brew install swig
 ```
 
-## Requirements MAC OS X
+## Requirements DEBIAN/UBUNTU
 
 ```
   $ apt-get install pulseaudio libpulse-dev

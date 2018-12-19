@@ -43,7 +43,7 @@ export default class Recorder {
       }
 
       var gain = Math.sqrt(sum / input.length).toFixed(2) * 100
-      if (gain > 1) {
+      if (gain > 2) {
         console.log('speaking')
         this.ws.send(convertoFloat32ToInt16(input))
       }
@@ -52,7 +52,7 @@ export default class Recorder {
   }
 
   _initializeSocket() {
-    this.ws = new WebSocket("ws://localhost:8080")
+    this.ws = new WebSocket("ws://localhost:8765")
     this.ws.binaryType = "arraybuffer"
 
     this.ws.onmessage = ((e) => {
@@ -63,12 +63,12 @@ export default class Recorder {
         this.onTalk(e.data)
       }
     })
-  
+
     this.ws.onclose = ((e) => {
       if (e.data == 'connected') {
         console.log('Socket closed')
         this.connected = false
-      } 
+      }
     })
   }
 

@@ -1,7 +1,7 @@
 import pyaudio
 
 HOST = 'localhost'
-PORT = 8080
+PORT = 8765
 
 CHUNK = 1024
 FORMAT = pyaudio.paInt16
