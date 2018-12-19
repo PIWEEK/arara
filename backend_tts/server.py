@@ -13,15 +13,12 @@ def response(trasncription, error=None):
 
 
 async def listen(websocket, _):
+    await websocket.send('connected')
     frame_data = []
-
     stt = speechtotext.SpeechToText()
-
     while True:
         chunk = await websocket.recv()
-        frame_data.append(chunk)
-
-        if len(frame_data) == max_frames:
+        if chunk == 'transcribe':
             audio_data = stt.process_audio(frame_data)
 
             try:
@@ -32,6 +29,8 @@ async def listen(websocket, _):
                 r = response(None, error=str(e))
             frame_data = []
             await websocket.send(r)
+        else:
+            frame_data.append(chunk)
 
 start_server = websockets.serve(listen, settings.HOST, settings.PORT)
 asyncio.get_event_loop().run_until_complete(start_server)
