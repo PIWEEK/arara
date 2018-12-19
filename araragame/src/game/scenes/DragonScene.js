@@ -6,6 +6,7 @@ import background from '@/game/assets/fondo_acuarela.png'
 import dragon from '@/game/assets/dragon.png'
 import fireballSprite from '@/game/assets/fireball.png'
 import knightSprite from '@/game/assets/knight-animation.png'
+import hitboxSprite from '@/game/assets/hitbox.png'
 import fireballFX from '@/game/assets/audio/fx/fireball.wav'
 import shieldGuardFX from '@/game/assets/audio/fx/shieldguard.wav'
 
@@ -16,7 +17,8 @@ const STATES = {
 }
 
 const POSITIONS = {
-    KNIGHT: { x: 900, y: 650 },
+    KNIGHT: { x: 800, y: 500 },
+    HITBOX: { x: 900, y: 600 },
     FIREBALL: { x: 150, y: 200 },
     DRAGON: { x: 50, y: 200 }
 }
@@ -28,12 +30,15 @@ class KnightController {
     shieldUp = false;
     uncoverMovement = false;
     sprite = null;
+    hitbox = null;
 
     constructor(scene) {
         this.shieldUp = false;
         this.scene = scene;
         this._setAnimation();
-        this.sprite = this.scene.physics.add.sprite(POSITIONS.KNIGHT.x, POSITIONS.KNIGHT.y, 'knight');
+        this.sprite = this.scene.physics.add.sprite(POSITIONS.KNIGHT.x, POSITIONS.KNIGHT.y, 'knight').setOrigin(0,0);
+        this.hitbox = this.scene.physics.add.sprite(POSITIONS.HITBOX.x, POSITIONS.HITBOX.y, 'hitbox').setOrigin(0,0);
+        this.hitbox.setAlpha(0);
         this.restart();
     }
 
@@ -159,6 +164,7 @@ export default class DragonScene extends Scene {
     preload() {
         this.load.image('background', background);
         this.load.image('dragon', dragon);
+        this.load.image('hitbox', hitboxSprite);
         this.load.spritesheet('fireball', fireballSprite, { frameWidth: 188, frameHeight: 108 });
         this.load.spritesheet('knight', knightSprite, { frameWidth: 273, frameHeight: 225 });
         this.load.audio('fireballFX', [fireballFX]);
@@ -177,7 +183,7 @@ export default class DragonScene extends Scene {
 
         setInterval(() => {
             if (this.state == STATES.UNDERFIRE) {
-                this.fireballFactory.throwFireball(this.knightController.sprite);
+                this.fireballFactory.throwFireball(this.knightController.hitbox);
             }
         }, 2000)
 
