@@ -9,6 +9,12 @@ Backend “Speech To Text” which process received audio.
   $ brew install portaudio
 ```
 
+## Requirements MAC OS X
+
+```
+  $ apt-get install pulseaudio libpulse-dev
+```
+
 ## Requirements
 
 ```

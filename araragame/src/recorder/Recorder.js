@@ -4,6 +4,7 @@ export default class Recorder {
   input = null
   recorder = null
   recording = false
+  connected = false
   onTalk() {}
 
   constructor() {
@@ -31,9 +32,21 @@ export default class Recorder {
   _initializeProcesor() {
     this.recorder.onaudioprocess = ((e) => {
       if (!this.recording) return;
-      var stream = e.inputBuffer.getChannelData(0)
-      var encodedStream = convertoFloat32ToInt16(stream)
-      this.ws.send(encodedStream)
+      const input = event.inputBuffer.getChannelData(0);
+      let i;
+      let sum = 0.0;
+      for (i = 0; i < input.length; ++i) {
+        sum += input[i] * input[i];
+        if (Math.abs(input[i]) > 0.99) {
+          clipcount += 1;
+        }
+      }
+
+      var gain = Math.sqrt(sum / input.length).toFixed(2) * 100
+      if (gain > 1) {
+        console.log('speaking')
+        this.ws.send(convertoFloat32ToInt16(input))
+      }
     })
     console.log('Procesor initialized')
   }
@@ -42,10 +55,20 @@ export default class Recorder {
     this.ws = new WebSocket("ws://localhost:8080")
     this.ws.binaryType = "arraybuffer"
 
-    console.log('Socket initialized')
-
     this.ws.onmessage = ((e) => {
-      this.onTalk(e.data)
+      if (e.data == 'connected') {
+        console.log(e.data)
+        this.connected = true
+      } else {
+        this.onTalk(e.data)
+      }
+    })
+  
+    this.ws.onclose = ((e) => {
+      if (e.data == 'connected') {
+        console.log('Socket closed')
+        this.connected = false
+      } 
     })
   }
 
