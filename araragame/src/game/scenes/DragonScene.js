@@ -28,7 +28,7 @@ class KnightController {
     }
 
     _setAnimation() {
-        let config = {
+        let configGuard = {
             key: 'guard',
             frames: this.scene.anims.generateFrameNumbers('knight', { frames: [0, 1] }),
             frameRate: 6,
@@ -36,14 +36,22 @@ class KnightController {
             repeat: 0,
         };
 
-        this.scene.anims.create(config);
+        let configBurn = {
+            key: 'burn',
+            frames: this.scene.anims.generateFrameNumbers('knight', { frames: [2, 3, 4] }),
+            frameRate: 6,
+            yoyo: false,
+            repeat: 0,
+            delay: 0,
+        };
+
+        this.scene.anims.create(configGuard);
+        this.scene.anims.create(configBurn);
     }
 
     cover() {
         this.shieldUp = true;
         this.sprite.anims.play('guard');
-        this.sprite.anims.restart();
-        console.log('cover');
     }
 
     uncover() {
@@ -56,19 +64,18 @@ class KnightController {
     }
 
     impacted() {
-        this.sprite.setTint(0xff0000)
-
+        this.sprite.anims.play('burn');
         setTimeout(function () {
-            this.sprite.clearTint();
-        }.bind(this), 1000)
+            this.sprite.anims.load('guard');
+        }.bind(this), 3000)
     }
 
     block() {
         this.sprite.setTint(0x00ff00)
 
-        setTimeout(function () {
+        setTimeout(() => {
             this.sprite.clearTint();
-        }.bind(this), 1000)
+        }, 1000)
     }
 }
 
@@ -84,7 +91,7 @@ class FireballFactory {
 
     _setAnimation() {
         let fireballConfig = {
-            key: 'burn',
+            key: 'flame',
             frames: this.scene.anims.generateFrameNumbers('fireball'),
             frameRate: 6,
             yoyo: false,
@@ -96,8 +103,8 @@ class FireballFactory {
 
     throwFireball(target) {
         let sprite = this.scene.physics.add.sprite(150, 200, 'fireball');
-        sprite.anims.load('burn');
-        sprite.anims.play('burn');
+        sprite.anims.load('flame');
+        sprite.anims.play('flame');
         this.fireballs.push(sprite)
 
         this.scene.physics.moveToObject(sprite, target, this.speed);
@@ -153,12 +160,16 @@ export default class DragonScene extends Scene {
     }
 
     update(time, delta) {
-        if (keySpace.isDown && !this.knightController.shieldUp) {
-            this.knightController.cover()
-        }
 
-        if (!keySpace.isDown && this.knightController.shieldUp && !this.knightController.uncoverMovement) {
-            this.knightController.uncover();
+        // input controllers
+        if (this.state == STATES.UNDERFIRE) {
+            if (keySpace.isDown && !this.knightController.shieldUp) {
+                this.knightController.cover()
+            }
+
+            if (!keySpace.isDown && this.knightController.shieldUp && !this.knightController.uncoverMovement) {
+                this.knightController.uncover();
+            }
         }
     }
 
