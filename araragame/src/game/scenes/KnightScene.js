@@ -1,4 +1,6 @@
 import { Scene } from 'phaser'
+import GameController from '@/recorder/GameController.js'
+
 
 import bg_warrior from '@/game/assets/bg_warrior.png'
 import head from '@/game/assets/head.svg'
@@ -12,16 +14,38 @@ let tween;
 let headParticles;
 let headParticlesEmitter;
 
+
+class TweenController {
+    scene = null;
+    tween = null;
+
+    constructor(scene, tween) {
+        this.scene = scene;
+        this.tween = tween;
+    }
+
+    pushing() {
+        this.tween.resume();
+        //headParticlesEmitter.on = true;
+
+        setTimeout(() => {
+            this.tween.pause();
+            //headParticlesEmitter.on = false;
+        }, 1000)
+    }
+}
 export default class KnightScene extends Scene {
+    tweenController = null;
+
     constructor() {
         super({ key: 'KnightScene' })
     }
 
-    preload () {
+    preload() {
         this.load.image('bg_warrior', bg_warrior)
-        this.load.svg('body', body, {width: 200, height: 200})
+        this.load.svg('body', body, { width: 200, height: 200 })
 
-        this.load.spritesheet('head', head, {frameWidth: 200, frameHeight: 200})
+        this.load.spritesheet('head', head, { frameWidth: 200, frameHeight: 200 })
     }
 
     create() {
@@ -44,9 +68,9 @@ export default class KnightScene extends Scene {
             repeat: -1
         };
 
-        this.anims.create(config);
+        /*this.anims.create(config);
         head.anims.load('alive')
-        head.anims.play('alive')
+        head.anims.play('alive')*/
 
         // Add particles to head
         headParticles = this.add.particles('red');
@@ -77,15 +101,19 @@ export default class KnightScene extends Scene {
         })
 
         tween.pause();
+
+        this.tweenController = new TweenController(this, tween);
+
+        new GameController(this);
     }
 
     update() {
         if (keySpace.isDown) {
-            tween.resume();
-            headParticlesEmitter.on = true
-        } else {
-            headParticlesEmitter.on = false
-            tween.pause();
+            this.tweenController.pushing();
         }
+    }
+
+    action() {
+        this.tweenController.pushing();
     }
 }
