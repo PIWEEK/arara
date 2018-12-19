@@ -27,5 +27,6 @@ wss.on('connection', function connection(ws) {
 })
 
 wss.on('close', function () {
+  console.log('close')
   fileWriter.end();
 })

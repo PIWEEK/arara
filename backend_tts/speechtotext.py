@@ -1,3 +1,5 @@
+import settings
+
 import speech_recognition as sr
 
 
@@ -5,16 +7,13 @@ class RecognitionException(Exception):
     pass
 
 
-class Recognizer:
+class SpeechToText:
     def __init__(self):
         self.recognizer = sr.Recognizer()
 
-    def recognize(self, audio):
-        self.recognizer.adjust_for_ambient_noise(audio)
-        clean_audio = self.recognizer.listen(audio, phrase_time_limit=3)
-
+    def recognize(self, audio_data):
         try:
-            transcription = self.recognizer.recognize_google(clean_audio,
+            transcription = self.recognizer.recognize_sphinx(audio_data,
                                                              language='es-ES')
         except sr.UnknownValueError:
             raise RecognitionException("Could not understand audio")
@@ -22,3 +21,6 @@ class Recognizer:
             raise RecognitionException("Error; {0}".format(e))
 
         return transcription
+
+    def process_audio(self, frame_data):
+        return sr.AudioData(b''.join(frame_data), settings.RATE, 2)
