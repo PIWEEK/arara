@@ -6,7 +6,7 @@ DEBUG = os.environ.get('DEBUG', 'False').lower() in ['true', 'yes']
 HOST = os.environ.get('TTS_HOST', 'localhost')
 PORT = os.environ.get('TTS_PORT', 8765)
 LANG = os.environ.get('TTS_LANG', 'es-ES')
-RECOGNIZER = os.environ.get('TTS_RECOGNIZER', 'sphinx')
+PROVIDER = os.environ.get('TTS_PROVIDER', 'sphinx')
 
 CHUNK = os.environ.get('AUDIO_CHUNK', 1024)
 FORMAT = os.environ.get('AUDIO_FORMAT', 8)
