@@ -3,6 +3,8 @@ import background from '@/game/assets/fondo_acuarela.png'
 import dragon from '@/game/assets/dragon.png'
 import fireballSprite from '@/game/assets/fireball.png'
 import knightSprite from '@/game/assets/knight-animation.png'
+import fireballFX from '@/game/assets/audio/fx/fireball.wav'
+import shieldGuardFX from '@/game/assets/audio/fx/shieldguard.wav'
 
 const STATES = {
     PAUSE: 'PAUSE',
@@ -71,11 +73,7 @@ class KnightController {
     }
 
     block() {
-        this.sprite.setTint(0x00ff00)
-
-        setTimeout(() => {
-            this.sprite.clearTint();
-        }, 1000)
+        this.scene.sound.play('shieldGuardFX');
     }
 
     restart() {
@@ -112,6 +110,7 @@ class FireballFactory {
         sprite.anims.play('flame');
         this.fireballs.push(sprite)
 
+        this.scene.sound.play('fireballFX');
         this.scene.physics.moveToObject(sprite, target, this.speed);
         this.scene.physics.add.overlap(sprite, target, this.scene.fireballCollision, null, this.scene);
     }
@@ -149,6 +148,8 @@ export default class DragonScene extends Scene {
         this.load.image('dragon', dragon);
         this.load.spritesheet('fireball', fireballSprite, { frameWidth: 188, frameHeight: 108 });
         this.load.spritesheet('knight', knightSprite, { frameWidth: 273, frameHeight: 225 });
+        this.load.audio('fireballFX', [fireballFX]);
+        this.load.audio('shieldGuardFX', [shieldGuardFX]);
     }
 
     create() {
