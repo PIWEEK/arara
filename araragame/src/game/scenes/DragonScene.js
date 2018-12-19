@@ -1,11 +1,11 @@
 import { Scene } from 'phaser'
+import dragon from '@/game/assets/dragon.png'
 import fireballSprite from '@/game/assets/fireball.png'
 import knightSprite from '@/game/assets/knight.png'
 
-let fireball;
-let fireballSpeed;
 let knight;
 let knightController;
+let dragonController;
 let keySpace;
 class KnightController {
     shieldUp = false
@@ -50,21 +50,56 @@ class KnightController {
     }
 }
 
+class FireballFactory {
+    scene = null;
+    speed = Phaser.Math.GetSpeed(600, 4);
+    fireballs = [];
+
+    constructor(scene) {
+        this.scene = scene;
+    }
+
+    throwFireball(target) {
+        let sprite = this.scene.physics.add.sprite(150, 200, 'fireball');
+        sprite.anims.load('burn');
+        sprite.anims.play('burn');
+        this.fireballs.push(sprite)
+
+        this.scene.physics.add.overlap(sprite, target, this.scene.hitKnight, null, this.scene);
+    }
+
+
+    moveFireballs(delta) {
+        for (let fireball of this.fireballs) {
+            fireball.x += this.speed * delta;
+        }
+    }
+
+    destroyFireball(fireball) {
+        let index = this.fireballs.indexOf(fireball);
+        this.fireballs.splice(index, 1);
+        fireball.destroy();
+    }
+}
+
 export default class DragonScene extends Scene {
+    fireballFactory = null;
+
     constructor() {
         super({ key: 'DragonScene' })
     }
 
     preload() {
+        this.load.image('dragon', dragon)
         this.load.spritesheet('fireball', fireballSprite, { frameWidth: 188, frameHeight: 108 });
         this.load.spritesheet('knight', knightSprite, { frameWidth: 55, frameHeight: 64 })
     }
 
     create() {
         keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
         this.add.image(0, 0, 'sky').setOrigin(0, 0)
         this.add.image(50, 200, 'dragon').setOrigin(0, 0)
-        fireballSpeed = Phaser.Math.GetSpeed(600, 4)
 
         let fireballConfig = {
             key: 'burn',
@@ -88,17 +123,17 @@ export default class DragonScene extends Scene {
         knight = this.physics.add.sprite(600, 200, 'knight')
         knight.anims.load('guard');
         knight.anims.setDelay(0);
-        knightController = new KnightController(knight)
-        this.createNewFireBall()
+        knightController = new KnightController(knight);
+        this.fireballFactory = new FireballFactory(this);
+
+        setInterval( () => {
+            this.fireballFactory.throwFireball(knight);
+        }, 2000)
+
     }
 
     update(time, delta) {
-        // Fireball speed controller
-        fireball.x += fireballSpeed * delta
-        if (fireball.x > 800) {
-            fireball.destroy();
-            this.createNewFireBall()
-        }
+        this.fireballFactory.moveFireballs(delta)
 
         // Knight shield controller
         if (keySpace.isDown && !knightController.shieldUp) {
@@ -106,16 +141,8 @@ export default class DragonScene extends Scene {
         }
 
         if (!keySpace.isDown && knightController.shieldUp && !knightController.uncoverMovement) {
-            console.log('lauch uncover')
             knightController.uncover();
         }
-    }
-
-    createNewFireBall() {
-        fireball = this.physics.add.sprite(150, 200, 'fireball');
-        fireball.anims.load('burn');
-        fireball.anims.play('burn');
-        this.physics.add.overlap(fireball, knight, this.hitKnight, null, this);
     }
 
     hitKnight(fireball, knight) {
@@ -127,7 +154,6 @@ export default class DragonScene extends Scene {
             console.log('hit!!')
         }
 
-        fireball.destroy();
-        this.createNewFireBall();
+        this.fireballFactory.destroyFireball(fireball);
     }
 }
