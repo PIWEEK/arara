@@ -14,7 +14,7 @@ class SpeechToText:
     def recognize(self, audio_data):
         if settings.PROVIDER == 'sphinx':
             method = self.recognizer.recognize_sphinx
-        else if settings.PROVIDER == 'google':
+        elif settings.PROVIDER == 'google':
             method = self.recognizer.recognize_google
         else:
             raise LookupError(f'`{settings.PROVIDER}` is not a known provider. '\
