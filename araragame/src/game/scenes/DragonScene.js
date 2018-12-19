@@ -57,6 +57,19 @@ class FireballFactory {
 
     constructor(scene) {
         this.scene = scene;
+        this._setAnimation();
+    }
+
+    _setAnimation() {
+        let fireballConfig = {
+            key: 'burn',
+            frames: this.scene.anims.generateFrameNumbers('fireball'),
+            frameRate: 6,
+            yoyo: false,
+            repeat: -1
+        };
+
+        this.scene.anims.create(fireballConfig)
     }
 
     throwFireball(target) {
@@ -101,14 +114,6 @@ export default class DragonScene extends Scene {
         this.add.image(0, 0, 'sky').setOrigin(0, 0)
         this.add.image(50, 200, 'dragon').setOrigin(0, 0)
 
-        let fireballConfig = {
-            key: 'burn',
-            frames: this.anims.generateFrameNumbers('fireball'),
-            frameRate: 6,
-            yoyo: false,
-            repeat: -1
-        };
-
         let knightConfig = {
             key: 'guard',
             frames: this.anims.generateFrameNumbers('knight'),
@@ -117,7 +122,6 @@ export default class DragonScene extends Scene {
             repeat: 0,
         };
 
-        this.anims.create(fireballConfig)
         this.anims.create(knightConfig)
 
         knight = this.physics.add.sprite(600, 200, 'knight')
