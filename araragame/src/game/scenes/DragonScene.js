@@ -12,9 +12,13 @@ const STATES = {
     BURNED: 'BURNED',
 }
 
-let keySpace;
+const POSITIONS = {
+    KNIGHT: { x: 900, y: 650 },
+    FIREBALL: { x: 150, y: 200 },
+    DRAGON: { x: 50, y: 200 }
+}
+
 class KnightController {
-    POSITION = { x: 900, y: 650 }
     scene = null;
     shieldUp = false;
     uncoverMovement = false;
@@ -24,7 +28,7 @@ class KnightController {
         this.shieldUp = false;
         this.scene = scene;
         this._setAnimation();
-        this.sprite = this.scene.physics.add.sprite(this.POSITION.x, this.POSITION.y, 'knight');
+        this.sprite = this.scene.physics.add.sprite(POSITIONS.KNIGHT.x, POSITIONS.KNIGHT.y, 'knight');
         this.restart();
     }
 
@@ -105,7 +109,7 @@ class FireballFactory {
     }
 
     throwFireball(target) {
-        let sprite = this.scene.physics.add.sprite(150, 200, 'fireball');
+        let sprite = this.scene.physics.add.sprite(POSITIONS.FIREBALL.x, POSITIONS.FIREBALL.y, 'fireball');
         sprite.anims.load('flame');
         sprite.anims.play('flame');
         this.fireballs.push(sprite)
@@ -137,6 +141,9 @@ export default class DragonScene extends Scene {
     state = '';
     fireballFactory = null;
     knightController = null;
+    controls = {
+        keySpace: null
+    }
 
     constructor() {
         super({ key: 'DragonScene' })
@@ -153,11 +160,10 @@ export default class DragonScene extends Scene {
     }
 
     create() {
-        keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.controls.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-        this.add.image(0, 0, 'background').setOrigin(0, 0)
-        this.add.image(50, 200, 'dragon').setOrigin(0, 0)
-
+        this.add.image(0, 0, 'background').setOrigin(0, 0);
+        this.add.image(POSITIONS.DRAGON.x, POSITIONS.DRAGON.y, 'dragon').setOrigin(0, 0);
         this.knightController = new KnightController(this);
         this.fireballFactory = new FireballFactory(this);
 
@@ -175,11 +181,11 @@ export default class DragonScene extends Scene {
 
         // input controllers
         if (this.state == STATES.UNDERFIRE) {
-            if (keySpace.isDown && !this.knightController.shieldUp) {
+            if (this.controls.keySpace.isDown && !this.knightController.shieldUp) {
                 this.knightController.cover()
             }
 
-            if (!keySpace.isDown && this.knightController.shieldUp && !this.knightController.uncoverMovement) {
+            if (!this.controls.keySpace.isDown && this.knightController.shieldUp && !this.knightController.uncoverMovement) {
                 this.knightController.uncover();
             }
         }
@@ -206,6 +212,4 @@ export default class DragonScene extends Scene {
         this.fireballFactory.restart();
         this.knightController.restart();
     }
-
-
 }
