@@ -23,8 +23,7 @@ class KnightController {
         this.scene = scene;
         this._setAnimation();
         this.sprite = this.scene.physics.add.sprite(this.POSITION.x, this.POSITION.y, 'knight');
-        this.sprite.anims.load('guard');
-        this.sprite.anims.setDelay(0);
+        this.restart();
     }
 
     _setAnimation() {
@@ -34,6 +33,7 @@ class KnightController {
             frameRate: 6,
             yoyo: false,
             repeat: 0,
+            delay: 0,
         };
 
         let configBurn = {
@@ -56,18 +56,18 @@ class KnightController {
 
     uncover() {
         this.uncoverMovement = true;
-        setTimeout(function () {
-            this.sprite.anims.playReverse('guard');
-            this.shieldUp = false;
+        setTimeout(() => {
+            this.restart();
             this.uncoverMovement = false;
-        }.bind(this), 1000)
+        }, 1000)
     }
 
     impacted() {
         this.sprite.anims.play('burn');
-        setTimeout(function () {
-            this.sprite.anims.load('guard');
-        }.bind(this), 3000)
+
+        setTimeout(() => {
+            this.restart();
+        }, 3000)
     }
 
     block() {
@@ -76,6 +76,11 @@ class KnightController {
         setTimeout(() => {
             this.sprite.clearTint();
         }, 1000)
+    }
+
+    restart() {
+        this.sprite.anims.load('guard');
+        this.shieldUp = false;
     }
 }
 
@@ -108,7 +113,7 @@ class FireballFactory {
         this.fireballs.push(sprite)
 
         this.scene.physics.moveToObject(sprite, target, this.speed);
-        this.scene.physics.add.overlap(sprite, target, this.scene.hitKnight, null, this.scene);
+        this.scene.physics.add.overlap(sprite, target, this.scene.fireballCollision, null, this.scene);
     }
 
     destroyFireball(fireball) {
@@ -123,6 +128,10 @@ class FireballFactory {
         }
         this.fireballs = [];
     }
+
+    restart() {
+        this.destroyAll();
+    }
 }
 
 export default class DragonScene extends Scene {
@@ -132,7 +141,7 @@ export default class DragonScene extends Scene {
 
     constructor() {
         super({ key: 'DragonScene' })
-        this.state = STATES.UNDERFIRE;
+        this.state = STATES.PAUSE;
     }
 
     preload() {
@@ -150,6 +159,8 @@ export default class DragonScene extends Scene {
 
         this.knightController = new KnightController(this);
         this.fireballFactory = new FireballFactory(this);
+
+        this.restartGame();
 
         setInterval(() => {
             if (this.state == STATES.UNDERFIRE) {
@@ -173,19 +184,27 @@ export default class DragonScene extends Scene {
         }
     }
 
-    hitKnight(fireball, knight) {
+    fireballCollision(fireball, knight) {
         if (this.knightController.shieldUp) {
-            this.knightController.block()
+            this.knightController.block();
         } else {
-            this.knightController.impacted()
-            this.state = STATES.BURNED;
+            this.knightController.impacted();
             this.fireballFactory.destroyAll();
+            this.state = STATES.BURNED;
 
             setTimeout(() => {
-                this.state = STATES.UNDERFIRE;
+                this.restartGame();
             }, 3000);
         }
 
         this.fireballFactory.destroyFireball(fireball);
     }
+
+    restartGame() {
+        this.state = STATES.UNDERFIRE;
+        this.fireballFactory.restart();
+        this.knightController.restart();
+    }
+
+
 }
