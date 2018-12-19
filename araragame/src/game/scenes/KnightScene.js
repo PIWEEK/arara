@@ -1,35 +1,67 @@
 import { Scene } from 'phaser'
 
+import bg_warrior from '@/game/assets/bg_warrior.png'
+import head from '@/game/assets/head.svg'
+import body from '@/game/assets/body.svg'
+import legs from '@/game/assets/legs.svg'
+import shield from '@/game/assets/shield.svg'
+import stick from '@/game/assets/stick.svg'
+
 let keySpace;
 let tween;
-let helmetParticles;
-let helmetParticlesEmitter;
+let headParticles;
+let headParticlesEmitter;
 
 export default class KnightScene extends Scene {
     constructor() {
         super({ key: 'KnightScene' })
     }
 
+    preload () {
+        this.load.image('bg_warrior', bg_warrior)
+        this.load.svg('body', body, {width: 200, height: 200})
+
+        this.load.spritesheet('head', head, {frameWidth: 200, frameHeight: 200})
+    }
+
     create() {
-        this.add.image(0, 0, 'sky').setOrigin(0, 0)
+        this.add.image(0, 0, 'bg_warrior')
+            .setDisplaySize(window.innerWidth, window.innerHeight)
+            .setOrigin(0, 0)
+
         keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-        var helmet = this.add.image(0, 0, 'helmet').setOrigin(0, 0)
+        this.add.image(200, 600, 'body')
 
-        // Add particles to helmet
-        helmetParticles = this.add.particles('red');
-        helmetParticlesEmitter = helmetParticles.createEmitter({
+        var head = this.add.sprite(200, 200, 'head')
+
+        //anim head
+        var config = {
+            key: 'alive',
+            frames: this.anims.generateFrameNumbers('head'),
+            frameRate: 30,
+            yoyo: true,
+            repeat: -1
+        };
+
+        this.anims.create(config);
+        head.anims.load('alive')
+        head.anims.play('alive')
+
+        // Add particles to head
+        headParticles = this.add.particles('red');
+        headParticlesEmitter = headParticles.createEmitter({
             speed: 100,
             scale: { start: 1, end: 0 },
             blendMode: 'ADD',
             lifespan: 1000,
             y: 100
         })
-        helmetParticlesEmitter.startFollow(helmet);
-        helmetParticlesEmitter.enabled = false
+        headParticlesEmitter.startFollow(head);
+        headParticlesEmitter.enabled = false
 
         tween = this.tweens.add({
-            targets: helmet,
+            targets: head,
             props: {
                 x: { value: 600, duration: 3000 },
                 y: { value: 100, duration: 6000 },
@@ -39,8 +71,8 @@ export default class KnightScene extends Scene {
             repeat: 0,
             delay: 0,
             onComplete: function () {
-                var parentScene = this.parent.scene
-                parentScene.scene.start('DragonScene')
+                // var parentScene = this.parent.scene
+                // parentScene.scene.start('DragonScene')
             }
         })
 
@@ -50,9 +82,9 @@ export default class KnightScene extends Scene {
     update() {
         if (keySpace.isDown) {
             tween.resume();
-            helmetParticlesEmitter.on = true
+            headParticlesEmitter.on = true
         } else {
-            helmetParticlesEmitter.on = false
+            headParticlesEmitter.on = false
             tween.pause();
         }
     }
