@@ -1,42 +1,39 @@
 import asyncio
-import io
+
 import websockets
-import pyaudio
-import wave
-import recognizer as recog
-import speech_recognition as sr
 
-HOST = 'localhost'
-PORT = 8080
+import speechtotext
+import settings
 
-CHUNK = 1024
-FORMAT = pyaudio.paInt16
-CHANNELS = 2
-RATE = 44100
-RECORD_SECONDS = 2
-WAVE_OUTPUT_FILENAME = "output.wav"
+max_frames = int(settings.RATE / settings.CHUNK * settings.RECORD_SECONDS)
 
-# p = pyaudio.PyAudio()
+
+def response(trasncription, error=None):
+    return {'transcription': trasncription, 'error': error}
+
 
 async def listen(websocket, _):
     frame_data = []
-    max_frames = int(RATE / CHUNK * RECORD_SECONDS)
-    recognizer = recog.Recognizer()
+
+    stt = speechtotext.SpeechToText()
 
     while True:
         chunk = await websocket.recv()
         frame_data.append(chunk)
 
         if len(frame_data) == max_frames:
-            print('Procesando stream!')
-            audio = sr.AudioData(b''.join(frame_data), RATE, 2)
+            audio_data = stt.process_audio(frame_data)
+
+            try:
+                transcription = stt.recognize(audio_data)
+                await websocket.send(transcription)
+            except speechtotext.RecognitionException as e:
+                print('Error recognizing: {}'.format(e))
+                return response(None, error=e)
             frame_data = []
-            transcription = recognizer.recognizer.recognize_sphinx(audio,
-                                                   language='es-ES')
-            print(transcription)
-            await websocket.send(transcription)
+
 
 asyncio.get_event_loop().run_until_complete(
-    websockets.serve(listen, HOST, PORT))
-asyncio.get_event_loop().run_forever()
+    websockets.serve(listen, settings.HOST, settings.PORT))
 
+asyncio.get_event_loop().run_forever()
