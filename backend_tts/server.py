@@ -1,7 +1,10 @@
 import asyncio
 import json
+import os
+import uuid
+import wave
 import websockets
-
+import pyaudio
 import speechtotext
 import settings
 
@@ -17,8 +20,16 @@ async def listen(websocket, _):
     stt = speechtotext.SpeechToText()
     while True:
         chunk = await websocket.recv()
-        if chunk == 'transcribe':
+        if chunk == 'transcribe' and frame_data:
             audio_data = stt.process_audio(frame_data)
+
+            if settings.AUDIO_STORAGE and frame_data:
+                filename = f'{settings.AUDIO_FOLDER_PATH}/{uuid.uuid4()}.wav'
+                with wave.open(filename, 'wb') as f:
+                    f.setnchannels(settings.CHANNELS)
+                    f.setsampwidth(pyaudio.get_sample_size(settings.FORMAT))
+                    f.setframerate(settings.RATE)
+                    f.writeframes(audio_data.frame_data)
 
             try:
                 transcription = stt.recognize(audio_data)
