@@ -21,6 +21,8 @@ const POSITIONS = {
     DRAGON: { x: 50, y: 200 }
 }
 
+const COVERTIME = 1500;
+
 class KnightController {
     scene = null;
     shieldUp = false;
@@ -61,6 +63,7 @@ class KnightController {
     cover() {
         this.shieldUp = true;
         this.sprite.anims.play('guard');
+        this.uncover();
     }
 
     uncover() {
@@ -68,7 +71,7 @@ class KnightController {
         setTimeout(() => {
             this.restart();
             this.uncoverMovement = false;
-        }, 1000)
+        }, COVERTIME)
     }
 
     impacted() {
@@ -164,7 +167,7 @@ export default class DragonScene extends Scene {
 
     create() {
         this.controls.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        let gameController = new GameController();
+        new GameController(this);
         this.add.image(0, 0, 'background').setOrigin(0, 0);
         this.add.image(POSITIONS.DRAGON.x, POSITIONS.DRAGON.y, 'dragon').setOrigin(0, 0);
         this.knightController = new KnightController(this);
@@ -188,9 +191,9 @@ export default class DragonScene extends Scene {
                 this.knightController.cover()
             }
 
-            if (!this.controls.keySpace.isDown && this.knightController.shieldUp && !this.knightController.uncoverMovement) {
+            /*if (!this.controls.keySpace.isDown && this.knightController.shieldUp && !this.knightController.uncoverMovement) {
                 this.knightController.uncover();
-            }
+            }*/
         }
     }
 
@@ -214,5 +217,13 @@ export default class DragonScene extends Scene {
         this.state = STATES.UNDERFIRE;
         this.fireballFactory.restart();
         this.knightController.restart();
+    }
+
+    action() {
+        if (this.state == STATES.UNDERFIRE) {
+            if (!this.knightController.shieldUp) {
+                this.knightController.cover();
+            }
+        }
     }
 }
