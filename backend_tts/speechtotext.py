@@ -14,7 +14,7 @@ class SpeechToText:
     def recognize(self, audio_data):
         try:
             transcription = self.recognizer.recognize_sphinx(audio_data,
-                                                             language='es-ES')
+                                                             language=settings.LANG)
         except sr.UnknownValueError:
             raise RecognitionException("Could not understand audio")
         except sr.RequestError as e:

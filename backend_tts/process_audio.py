@@ -1,5 +1,6 @@
 import argparse
 import speech_recognition as sr
+import settings
 
 
 class RecognitionException(Exception):
@@ -9,7 +10,7 @@ class RecognitionException(Exception):
 def recognize_sphinx(recognizer, audio):
     # recognize speech using Sphinx
     try:
-        transcription = recognizer.recognize_sphinx(audio, language='es-ES')
+        transcription = recognizer.recognize_sphinx(audio, language=settings.LANG)
     except sr.UnknownValueError:
         raise RecognitionException("Sphinx could not understand audio")
     except sr.RequestError as e:
@@ -21,7 +22,7 @@ def recognize_sphinx(recognizer, audio):
 def recognize_google(recognizer, audio):
     # recognize speech using Google
     try:
-        transcription = recognizer.recognize_google(audio, language='es-ES')
+        transcription = recognizer.recognize_google(audio, language=settings.LANG)
     except sr.UnknownValueError:
         raise RecognitionException("Google could not understand audio")
     except sr.RequestError as e:
