@@ -5,6 +5,7 @@ import knightSprite from '@/game/assets/knight.png'
 
 let keySpace;
 class KnightController {
+    POSITION = { x: 600, y: 400 }
     scene = null;
     shieldUp = false;
     uncoverMovement = false;
@@ -14,7 +15,7 @@ class KnightController {
         this.shieldUp = false;
         this.scene = scene;
         this._setAnimation();
-        this.sprite = this.scene.physics.add.sprite(600, 200, 'knight');
+        this.sprite = this.scene.physics.add.sprite(this.POSITION.x, this.POSITION.y, 'knight');
         this.sprite.anims.load('guard');
         this.sprite.anims.setDelay(0);
     }
@@ -66,7 +67,6 @@ class KnightController {
 
 class FireballFactory {
     scene = null;
-    speed = Phaser.Math.GetSpeed(600, 4);
     fireballs = [];
 
     constructor(scene) {
@@ -92,13 +92,8 @@ class FireballFactory {
         sprite.anims.play('burn');
         this.fireballs.push(sprite)
 
+        this.scene.physics.moveToObject(sprite, target, 100);
         this.scene.physics.add.overlap(sprite, target, this.scene.hitKnight, null, this.scene);
-    }
-
-    moveFireballs(delta) {
-        for (let fireball of this.fireballs) {
-            fireball.x += this.speed * delta;
-        }
     }
 
     destroyFireball(fireball) {
@@ -137,9 +132,6 @@ export default class DragonScene extends Scene {
     }
 
     update(time, delta) {
-        this.fireballFactory.moveFireballs(delta)
-
-        // Knight shield controller
         if (keySpace.isDown && !this.knightController.shieldUp) {
             this.knightController.cover()
         }
