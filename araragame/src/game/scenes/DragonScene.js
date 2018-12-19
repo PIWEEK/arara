@@ -1,4 +1,7 @@
 import { Scene } from 'phaser'
+import GameController from '@/recorder/GameController.js'
+
+// assets
 import background from '@/game/assets/fondo_acuarela.png'
 import dragon from '@/game/assets/dragon.png'
 import fireballSprite from '@/game/assets/fireball.png'
@@ -161,7 +164,7 @@ export default class DragonScene extends Scene {
 
     create() {
         this.controls.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-
+        let gameController = new GameController();
         this.add.image(0, 0, 'background').setOrigin(0, 0);
         this.add.image(POSITIONS.DRAGON.x, POSITIONS.DRAGON.y, 'dragon').setOrigin(0, 0);
         this.knightController = new KnightController(this);
