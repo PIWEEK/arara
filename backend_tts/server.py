@@ -26,10 +26,10 @@ async def listen(websocket, _):
 
             try:
                 transcription = stt.recognize(audio_data)
-                await websocket.send(transcription)
+                await websocket.send(response(transcription))
             except speechtotext.RecognitionException as e:
                 print('Error recognizing: {}'.format(e))
-                return response(None, error=e)
+                await websocket.send(response(None, error=e))
             frame_data = []
 
 
