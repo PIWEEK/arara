@@ -4,7 +4,7 @@
   var socket = null
   var constraints = {
     audio: true,
-    video: false
+    video: false,
   }
 
   navigator.mediaDevices.getUserMedia(constraints).then(function (device) {

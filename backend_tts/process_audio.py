@@ -82,7 +82,7 @@ def recognize_speech_from_mic(recognizer, provider, microphone):
 
 def main():
     recognizer = sr.Recognizer()
-    microphone = sr.Microphone(sample_rate=16000)
+    microphone = sr.Microphone()
 
     print("Tell me something..")
 
