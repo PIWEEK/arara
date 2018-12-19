@@ -1,5 +1,5 @@
 import asyncio
-
+import json
 import websockets
 
 import speechtotext
@@ -9,7 +9,7 @@ max_frames = int(settings.RATE / settings.CHUNK * settings.RECORD_SECONDS)
 
 
 def response(trasncription, error=None):
-    return {'transcription': trasncription, 'error': error}
+    return json.dumps({'transcription': trasncription, 'error': error})
 
 
 async def listen(websocket, _):
@@ -26,14 +26,13 @@ async def listen(websocket, _):
 
             try:
                 transcription = stt.recognize(audio_data)
-                await websocket.send(response(transcription))
+                r = response(transcription)
             except speechtotext.RecognitionException as e:
-                print('Error recognizing: {}'.format(e))
-                await websocket.send(response(None, error=e))
+                print('Error recognizing: {}'.format(str(e)))
+                r = response(None, error=str(e))
             frame_data = []
+            await websocket.send(r)
 
-
-asyncio.get_event_loop().run_until_complete(
-    websockets.serve(listen, settings.HOST, settings.PORT))
-
+start_server = websockets.serve(listen, settings.HOST, settings.PORT)
+asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()
