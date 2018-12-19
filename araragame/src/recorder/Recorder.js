@@ -48,7 +48,7 @@ export default class Recorder {
       } else if (this.speakingCounter > 0) {
         this.muteCounter++
       }
-      if (this.muteCounter == 10 || this.speakingCounter == 20) {
+      if (this.muteCounter == 5 || this.speakingCounter == 20) {
         this.ws.send('transcribe')
         this.muteCounter = 0
         this.speakingCounter = 0
