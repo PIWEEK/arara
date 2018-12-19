@@ -13,7 +13,6 @@ def response(trasncription, error=None):
 
 
 async def listen(websocket, _):
-    await websocket.send('connected')
     frame_data = []
     stt = speechtotext.SpeechToText()
     while True:
