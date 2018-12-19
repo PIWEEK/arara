@@ -1,11 +1,12 @@
 import { Scene } from 'phaser'
+import background from '@/game/assets/fondo_acuarela.png'
 import dragon from '@/game/assets/dragon.png'
 import fireballSprite from '@/game/assets/fireball.png'
-import knightSprite from '@/game/assets/knight.png'
+import knightSprite from '@/game/assets/knight-animation.png'
 
 let keySpace;
 class KnightController {
-    POSITION = { x: 600, y: 400 }
+    POSITION = { x: 900, y: 650 }
     scene = null;
     shieldUp = false;
     uncoverMovement = false;
@@ -23,7 +24,7 @@ class KnightController {
     _setAnimation() {
         let config = {
             key: 'guard',
-            frames: this.scene.anims.generateFrameNumbers('knight'),
+            frames: this.scene.anims.generateFrameNumbers('knight', { frames: [0, 1]}),
             frameRate: 6,
             yoyo: false,
             repeat: 0,
@@ -83,7 +84,7 @@ class FireballFactory {
             repeat: -1
         };
 
-        this.scene.anims.create(fireballConfig)
+        this.scene.anims.create(fireballConfig);
     }
 
     throwFireball(target) {
@@ -111,15 +112,16 @@ export default class DragonScene extends Scene {
     }
 
     preload() {
-        this.load.image('dragon', dragon)
+        this.load.image('background', background);
+        this.load.image('dragon', dragon);
         this.load.spritesheet('fireball', fireballSprite, { frameWidth: 188, frameHeight: 108 });
-        this.load.spritesheet('knight', knightSprite, { frameWidth: 55, frameHeight: 64 })
+        this.load.spritesheet('knight', knightSprite, { frameWidth: 273, frameHeight: 225 });
     }
 
     create() {
         keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-        this.add.image(0, 0, 'sky').setOrigin(0, 0)
+        this.add.image(0, 0, 'background').setOrigin(0, 0)
         this.add.image(50, 200, 'dragon').setOrigin(0, 0)
 
         this.knightController = new KnightController(this);
