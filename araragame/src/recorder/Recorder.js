@@ -5,6 +5,8 @@ export default class Recorder {
   recorder = null
   recording = false
   connected = false
+  muteCounter = 0
+  speakingCounter = 0
   onTalk() {}
 
   constructor() {
@@ -37,15 +39,19 @@ export default class Recorder {
       let sum = 0.0;
       for (i = 0; i < input.length; ++i) {
         sum += input[i] * input[i];
-        if (Math.abs(input[i]) > 0.99) {
-          clipcount += 1;
-        }
       }
-
       var gain = Math.sqrt(sum / input.length).toFixed(2) * 100
       if (gain > 2) {
         console.log('speaking')
+        this.speakingCounter++
         this.ws.send(convertoFloat32ToInt16(input))
+      } else if (this.speakingCounter > 0) {
+        this.muteCounter++
+      }
+      if (this.muteCounter == 10 || this.speakingCounter == 20) {
+        this.ws.send('transcribe')
+        this.muteCounter = 0
+        this.speakingCounter = 0
       }
     })
     console.log('Procesor initialized')
