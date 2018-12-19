@@ -3,18 +3,32 @@ import dragon from '@/game/assets/dragon.png'
 import fireballSprite from '@/game/assets/fireball.png'
 import knightSprite from '@/game/assets/knight.png'
 
-let knight;
-let knightController;
-let dragonController;
 let keySpace;
 class KnightController {
-    shieldUp = false
-    uncoverMovement = false
-    sprite = null
+    scene = null;
+    shieldUp = false;
+    uncoverMovement = false;
+    sprite = null;
 
-    constructor(sprite) {
+    constructor(scene) {
         this.shieldUp = false;
-        this.sprite = sprite;
+        this.scene = scene;
+        this._setAnimation();
+        this.sprite = this.scene.physics.add.sprite(600, 200, 'knight');
+        this.sprite.anims.load('guard');
+        this.sprite.anims.setDelay(0);
+    }
+
+    _setAnimation() {
+        let config = {
+            key: 'guard',
+            frames: this.scene.anims.generateFrameNumbers('knight'),
+            frameRate: 6,
+            yoyo: false,
+            repeat: 0,
+        };
+
+        this.scene.anims.create(config);
     }
 
     cover() {
@@ -81,7 +95,6 @@ class FireballFactory {
         this.scene.physics.add.overlap(sprite, target, this.scene.hitKnight, null, this.scene);
     }
 
-
     moveFireballs(delta) {
         for (let fireball of this.fireballs) {
             fireball.x += this.speed * delta;
@@ -97,7 +110,7 @@ class FireballFactory {
 
 export default class DragonScene extends Scene {
     fireballFactory = null;
-
+    knightController = null;
     constructor() {
         super({ key: 'DragonScene' })
     }
@@ -114,24 +127,11 @@ export default class DragonScene extends Scene {
         this.add.image(0, 0, 'sky').setOrigin(0, 0)
         this.add.image(50, 200, 'dragon').setOrigin(0, 0)
 
-        let knightConfig = {
-            key: 'guard',
-            frames: this.anims.generateFrameNumbers('knight'),
-            frameRate: 6,
-            yoyo: false,
-            repeat: 0,
-        };
-
-        this.anims.create(knightConfig)
-
-        knight = this.physics.add.sprite(600, 200, 'knight')
-        knight.anims.load('guard');
-        knight.anims.setDelay(0);
-        knightController = new KnightController(knight);
+        this.knightController = new KnightController(this);
         this.fireballFactory = new FireballFactory(this);
 
-        setInterval( () => {
-            this.fireballFactory.throwFireball(knight);
+        setInterval(() => {
+            this.fireballFactory.throwFireball(this.knightController.sprite);
         }, 2000)
 
     }
@@ -140,21 +140,21 @@ export default class DragonScene extends Scene {
         this.fireballFactory.moveFireballs(delta)
 
         // Knight shield controller
-        if (keySpace.isDown && !knightController.shieldUp) {
-            knightController.cover()
+        if (keySpace.isDown && !this.knightController.shieldUp) {
+            this.knightController.cover()
         }
 
-        if (!keySpace.isDown && knightController.shieldUp && !knightController.uncoverMovement) {
-            knightController.uncover();
+        if (!keySpace.isDown && this.knightController.shieldUp && !this.knightController.uncoverMovement) {
+            this.knightController.uncover();
         }
     }
 
     hitKnight(fireball, knight) {
-        if (knightController.shieldUp) {
-            knightController.block()
+        if (this.knightController.shieldUp) {
+            this.knightController.block()
             console.log('blocked!!!');
         } else {
-            knightController.impacted()
+            this.knightController.impacted()
             console.log('hit!!')
         }
 
