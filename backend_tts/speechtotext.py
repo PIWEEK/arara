@@ -25,7 +25,7 @@ class SpeechToText:
     def recognize(self, audio_data):
         if settings.DEBUG:
             return get_recognition_sample()
-
+        print('Debug false. Recognizing..')
         if settings.PROVIDER == 'google':
             method = self.recognizer.recognize_google
         else:
