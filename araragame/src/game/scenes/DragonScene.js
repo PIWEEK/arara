@@ -14,6 +14,7 @@ const STATES = {
     PAUSE: 'PAUSE',
     UNDERFIRE: 'UNDERFIRE',
     BURNED: 'BURNED',
+    DONE: 'DONE',
 }
 
 const POSITIONS = {
@@ -28,7 +29,7 @@ const COVERTIME = 2000;
 const FIREBALL_FREQUENCY = 6000;
 const FIREBALL_SPEED = 200; // pixels/seconds
 const FIREBALL_ROTATION = -0.706858;
-
+const SUCCESS_BLOCKS = 5;
 class KnightController {
     scene = null;
     shieldUp = false;
@@ -236,9 +237,12 @@ export default class DragonScene extends Scene {
     fireballFactory = null;
     knightController = null;
     dragonController = null;
+    blockCounter = 0;
+    textBox = null;
 
     controls = {
-        keySpace: null
+        keySpace: null,
+        R: null
     }
 
     constructor() {
@@ -259,9 +263,12 @@ export default class DragonScene extends Scene {
 
     create() {
         this.controls.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.controls.R = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+
         new GameController(this);
 
         this.add.image(0, 0, 'background').setOrigin(0);
+        this.textBox = this.add.text(100, 100, '', { fontSize: '48px', fill: '#000' });
         this.knightController = new KnightController(this);
         this.fireballFactory = new FireballFactory(this, this.knightController.hitbox);
         this.dragonController = new DragonController(this, this.fireballFactory);
@@ -280,25 +287,28 @@ export default class DragonScene extends Scene {
 
     update(time, delta) {
 
-        // input controllers
         if (this.state == STATES.UNDERFIRE) {
             if (this.controls.keySpace.isDown && !this.knightController.shieldUp) {
                 this.knightController.cover()
             }
+        }
 
-            /*if (!this.controls.keySpace.isDown && this.knightController.shieldUp && !this.knightController.uncoverMovement) {
-                this.knightController.uncover();
-            }*/
+        if (this.state == STATES.DONE) {
+            if (this.controls.R.isDown) {
+                this.restartGame();
+            }
         }
     }
 
     fireballCollision(fireball, knight) {
         if (this.knightController.shieldUp) {
             this.knightController.block();
+            this.incrementBlockCount();
         } else {
+            this.state = STATES.BURNED;
             this.knightController.impacted();
             this.fireballFactory.destroyAll();
-            this.state = STATES.BURNED;
+            this.resetBlockCOunt();
 
             setTimeout(() => {
                 this.restartGame();
@@ -306,12 +316,28 @@ export default class DragonScene extends Scene {
         }
         this.fireballFactory.makeExplosion();
         this.fireballFactory.destroyFireball(fireball);
+
+        if (this.blockCounter == SUCCESS_BLOCKS) {
+            this.state = STATES.DONE;
+            this.textBox.setText('WIN!!');
+        }
     }
 
     restartGame() {
         this.state = STATES.UNDERFIRE;
+        this.blockCounter = 0;
         this.fireballFactory.restart();
         this.knightController.restart();
+    }
+
+    incrementBlockCount() {
+        this.blockCounter += 1;
+        this.textBox.setText(`${this.blockCounter} paradas`);
+    }
+
+    resetBlockCOunt() {
+        this.blockCounter = 0;
+        this.textBox.setText('0 paradas');
     }
 
     action() {
