@@ -9,6 +9,7 @@ import knightSprite from '@/game/assets/knight-animation.png'
 import hitboxSprite from '@/game/assets/hitbox.png'
 import fireballFX from '@/game/assets/audio/fx/fireball.wav'
 import shieldGuardFX from '@/game/assets/audio/fx/shieldguard.wav'
+import muzzleFlash from '@/game/assets/particles/muzzleflash3.png'
 
 const STATES = {
     PAUSE: 'PAUSE',
@@ -139,6 +140,21 @@ class FireballFactory {
         sprite.anims.play('flame');
         this.fireballs.push(sprite)
 
+        let fireParticle = this.scene.add.particles('muzzleflash');
+        fireParticle.createEmitter({
+            alpha: { start: 1, end: 0 },
+            scale: { start: 1, end: 0 },
+            speed: 20,
+            accelerationY: -300,
+            angle: { min: -85, max: -95 },
+            rotate: { min: -180, max: 180 },
+            lifespan: { min: 1000, max: 1800 },
+            blendMode: 'ADD',
+            frequency: 110,
+            maxParticles: 5,
+            follow: sprite
+        });
+
         //this.scene.sound.play('fireballFX');
         this.scene.physics.moveToObject(sprite, target, FIREBALL_SPEED);
         this.scene.physics.add.overlap(sprite, target, this.scene.fireballCollision, null, this.scene);
@@ -189,6 +205,7 @@ export default class DragonScene extends Scene {
 
     preload() {
         this.load.image('background', background);
+        this.load.image('muzzleflash', muzzleFlash);
         this.load.image('dragon', dragon);
         this.load.image('hitbox', hitboxSprite);
         this.load.spritesheet('fireball', fireballSprite, { frameWidth: 165, frameHeight: 335 });
