@@ -18,13 +18,16 @@ const STATES = {
 
 const POSITIONS = {
     KNIGHT: { x: 800, y: 500 },
+    EXPLOSION: { x: 800, y: 580 },
     HITBOX: { x: 900, y: 600 },
     FIREBALL: { x: 150, y: 200 },
     DRAGON: { x: 50, y: 200 }
 }
 
 const COVERTIME = 1500;
-
+const FIREBALL_FREQUENCY = 4000;
+const FIREBALL_SPEED = 200; // pixels/seconds
+const FIREBALL_ROTATION = -0.706858;
 class KnightController {
     scene = null;
     shieldUp = false;
@@ -100,7 +103,7 @@ class KnightController {
 class FireballFactory {
     scene = null;
     fireballs = [];
-    speed = 200 // pixes/second
+    explosion = null;
 
     constructor(scene) {
         this.scene = scene;
@@ -110,23 +113,34 @@ class FireballFactory {
     _setAnimation() {
         let fireballConfig = {
             key: 'flame',
-            frames: this.scene.anims.generateFrameNumbers('fireball'),
+            frames: this.scene.anims.generateFrameNumbers('fireball', {frames: [0, 1, 2, 3, 4, 5]}),
             frameRate: 6,
             yoyo: false,
-            repeat: -1
+            repeat: 0
         };
 
+        let explodeConfig = {
+            key: 'explode',
+            frames: this.scene.anims.generateFrameNumbers('fireball', {frames: [6]}),
+            frameRate: 6,
+            yoyo: false,
+            repeat: 0
+        };
+
+
         this.scene.anims.create(fireballConfig);
+        this.scene.anims.create(explodeConfig);
     }
 
     throwFireball(target) {
         let sprite = this.scene.physics.add.sprite(POSITIONS.FIREBALL.x, POSITIONS.FIREBALL.y, 'fireball');
+        sprite.setRotation(FIREBALL_ROTATION);
         sprite.anims.load('flame');
         sprite.anims.play('flame');
         this.fireballs.push(sprite)
 
         //this.scene.sound.play('fireballFX');
-        this.scene.physics.moveToObject(sprite, target, this.speed);
+        this.scene.physics.moveToObject(sprite, target, FIREBALL_SPEED);
         this.scene.physics.add.overlap(sprite, target, this.scene.fireballCollision, null, this.scene);
     }
 
@@ -134,6 +148,17 @@ class FireballFactory {
         let index = this.fireballs.indexOf(fireball);
         this.fireballs.splice(index, 1);
         fireball.destroy();
+    }
+
+    makeExplosion() {
+        this.explosion = this.scene.physics.add.sprite(POSITIONS.EXPLOSION.x, POSITIONS.EXPLOSION.y, 'fireball');
+        this.explosion.anims.load('explode');
+
+        this.explosion.on('animationcomplete', () => {
+            this.explosion.destroy();
+        }, this.scene);
+
+        this.explosion.anims.play('explode');
     }
 
     destroyAll() {
@@ -166,7 +191,7 @@ export default class DragonScene extends Scene {
         this.load.image('background', background);
         this.load.image('dragon', dragon);
         this.load.image('hitbox', hitboxSprite);
-        this.load.spritesheet('fireball', fireballSprite, { frameWidth: 188, frameHeight: 108 });
+        this.load.spritesheet('fireball', fireballSprite, { frameWidth: 165, frameHeight: 335 });
         this.load.spritesheet('knight', knightSprite, { frameWidth: 273, frameHeight: 225 });
         this.load.audio('fireballFX', [fireballFX]);
         this.load.audio('shieldGuardFX', [shieldGuardFX]);
@@ -175,7 +200,9 @@ export default class DragonScene extends Scene {
 
     create() {
         this.controls.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        this.add.image(0, 0, 'background').setOrigin(0, 0);
+        new GameController(this);
+
+        this.add.image(0, 0, 'background').setOrigin(0);
         this.add.image(POSITIONS.DRAGON.x, POSITIONS.DRAGON.y, 'dragon').setOrigin(0, 0);
         this.knightController = new KnightController(this);
         this.fireballFactory = new FireballFactory(this);
@@ -188,7 +215,7 @@ export default class DragonScene extends Scene {
             if (this.state == STATES.UNDERFIRE) {
                 this.fireballFactory.throwFireball(this.knightController.hitbox);
             }
-        }, 2000)
+        }, FIREBALL_FREQUENCY);
 
     }
 
@@ -218,7 +245,7 @@ export default class DragonScene extends Scene {
                 this.restartGame();
             }, 3000);
         }
-
+        this.fireballFactory.makeExplosion();
         this.fireballFactory.destroyFireball(fireball);
     }
 
