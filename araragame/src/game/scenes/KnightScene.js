@@ -2,15 +2,15 @@ import { Scene } from 'phaser'
 import GameController from '@/recorder/GameController.js'
 
 
-import background from '@/game/assets/bg_warrior.png'
-import head from '@/game/assets/head.png'
+import background from '@/game/assets/background.png'
+import shape from '@/game/assets/knight_scene/shape.png'
+import head from '@/game/assets/knight_scene/helmet.png'
 import headSprite from '@/game/assets/head_sprite.png'
-import body from '@/game/assets/body.png'
-import legs from '@/game/assets/legs.png'
-import armor from '@/game/assets/armor.png'
-import shield from '@/game/assets/shield.png'
+import body from '@/game/assets/knight_scene/body.png'
+import legs from '@/game/assets/knight_scene/legs.png'
+import armor from '@/game/assets/knight_scene/armor.png'
+import shield from '@/game/assets/knight_scene/shield.png'
 import shieldSprite from '@/game/assets/shield_sprite.png'
-import stick from '@/game/assets/stick.png'
 
 const POSITIONS = {
     HEAD_ORIGIN: {x: 200, y: 200},
@@ -19,19 +19,18 @@ const POSITIONS = {
     ARMOR_ORIGIN: {x: 400, y: 300},
     SHIELD_ORIGIN: {x: 205, y: 320},
 
-    HEAD_OFFSET: {x: 669, y: 62},
-    BODY_OFFSET: {x: 605, y: 325},
-    LEGS_OFFSET: {x: 664, y: 488},
+    HEAD_OFFSET: {x: 673, y: 50},
+    BODY_OFFSET: {x: 606, y: 320},
+    LEGS_OFFSET: {x: 666, y: 490},
     ARMOR_OFFSET: {x: 660, y: 325},
-    SHIELD_OFFSET: {x: 520, y: 270}
+    SHIELD_OFFSET: {x: 520, y: 270},
+
+    SHAPE: {x: 605, y:49},
 }
 
 let keySpace;
 let headSpriteAnim;
 let shieldSpriteAnim;
-let tween;
-let headParticles;
-let headParticlesEmitter;
 
 class TweenController {
     scene = null;
@@ -83,10 +82,10 @@ class Transition {
                         this.element.setDepth(1).setRotation(0)
                         break
                     case 'head':
-                        this.element.setDepth(2).setRotation(0)
+                        this.element.setDepth(3).setRotation(0)
                         break
                     case 'body':
-                        this.element.setDepth(3).setRotation(0)
+                        this.element.setDepth(2).setRotation(0)
                         break
                     case 'armor':
                         this.element.setDepth(4).setRotation(0)
@@ -97,7 +96,7 @@ class Transition {
                 }
             },
             onComplete:  () => {
-                if (resource === 'head') {
+                /*if (resource === 'head') {
                     this.element.destroy(true)
                     headSpriteAnim = this.scene.add.sprite(POSITIONS.HEAD_OFFSET.x, POSITIONS.HEAD_OFFSET.y, 'headSprite')
                         .setOrigin(0,0)
@@ -107,7 +106,7 @@ class Transition {
                     shieldSpriteAnim = this.scene.add.sprite(POSITIONS.SHIELD_OFFSET.x, POSITIONS.SHIELD_OFFSET.y, 'shieldSprite')
                         .setOrigin(0,0)
                         .setDepth(5)
-                }
+                }*/
                 this.scene.nextTransition();
             }
         })
@@ -135,12 +134,13 @@ export default class KnightScene extends Scene {
     }
 
     preload() {
-        this.load.image('background', background)
-        this.load.image('head', head)
-        this.load.image('body', body, { width: 200, height: 200 })
-        this.load.image('legs', legs, { width: 200, height: 200 })
-        this.load.image('armor', armor, { width: 200, height: 200 })
-        this.load.image('shield', shield, { width: 200, height: 200 })
+        this.load.image('background', background);
+        this.load.image('shape', shape);
+        this.load.image('head', head);
+        this.load.image('body', body);
+        this.load.image('legs', legs);
+        this.load.image('armor', armor);
+        this.load.image('shield', shield);
 
         this.load.spritesheet('headSprite', headSprite, { frameWidth: 363, frameHeight: 476 });
         this.load.spritesheet('shieldSprite', shieldSprite, { frameWidth: 401, frameHeight: 632 });
@@ -151,7 +151,8 @@ export default class KnightScene extends Scene {
     create() {
         keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-        this.add.image(0, 0, 'background').setOrigin(0).setScale(0.57)
+        this.add.image(0, 0, 'background').setOrigin(0);
+        this.add.image(POSITIONS.SHAPE.x, POSITIONS.SHAPE.y, 'shape').setOrigin(0);
 
         let configShield = {
             key: 'shieldAlive',
@@ -172,19 +173,6 @@ export default class KnightScene extends Scene {
         }
 
         this.anims.create(configHead)
-
-        // Add particles to head
-        // headParticles = this.add.particles('red');
-        // headParticlesEmitter = headParticles.createEmitter({
-        //     speed: 100,
-        //     scale: { start: 1, end: 0 },
-        //     blendMode: 'ADD',
-        //     lifespan: 1000,
-        //     y: 100
-        // });
-
-        // headParticlesEmitter.startFollow(head);
-        // headParticlesEmitter.enabled = false
 
         this._setTransitions();
         this.nextTransition();
@@ -217,11 +205,11 @@ export default class KnightScene extends Scene {
         }
         else {
 
-            shieldSpriteAnim.anims.load('shieldAlive')
-            shieldSpriteAnim.anims.play('shieldAlive')
+            //shieldSpriteAnim.anims.load('shieldAlive')
+            //shieldSpriteAnim.anims.play('shieldAlive')
 
-            headSpriteAnim.anims.load('headAlive')
-            headSpriteAnim.anims.play('headAlive')
+            //headSpriteAnim.anims.load('headAlive')
+            //headSpriteAnim.anims.play('headAlive')
 
             setTimeout( () => {
                 this.scene.start('DragonScene');
