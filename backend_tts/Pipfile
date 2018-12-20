@@ -4,11 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+pyaudio = "*"
 speechrecognition = "*"
 websockets = "*"
-
-[dev-packages]
-pyaudio = "*"
 
 [requires]
 python_version = "3.7"
