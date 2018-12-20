@@ -1,4 +1,4 @@
-const config = require('@/config/config.json')
+import Vue from 'vue'
 
 export default class Recorder {
   // options
@@ -84,7 +84,9 @@ export default class Recorder {
     })
 
     function connect(onMessage) {
-      var ws = new WebSocket(`ws://${config.TTS_HOST}:${config.TTS_PORT}`)
+      const TTS_HOST = Vue.config.app.VUE_APP_TTS_PORT
+      const TTS_PORT = Vue.config.app.VUE_APP_TTS_HOST
+      var ws = new WebSocket(`ws://${TTS_HOST}:${TTS_PORT}`)
       ws.binaryType = "arraybuffer"
       ws.onmessage = ((e) => {
         var data = JSON.parse(e.data)
