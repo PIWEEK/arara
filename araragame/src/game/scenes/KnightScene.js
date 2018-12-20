@@ -2,17 +2,24 @@ import { Scene } from 'phaser'
 import GameController from '@/recorder/GameController.js'
 
 
-import bg_warrior from '@/game/assets/bg_warrior.png'
+import background from '@/game/assets/game-background.png'
 import head from '@/game/assets/head.svg'
 import body from '@/game/assets/body.svg'
 import legs from '@/game/assets/legs.svg'
 import shield from '@/game/assets/shield.svg'
 import stick from '@/game/assets/stick.svg'
 
+const POSITIONS = {
+    BODY_ORIGIN: {x: 100, y: 300},
+    BODY_OFFSET: {x: 800, y: 150},
+}
+
 let keySpace;
 let tween;
 let headParticles;
 let headParticlesEmitter;
+
+
 
 
 class TweenController {
@@ -26,51 +33,67 @@ class TweenController {
 
     pushing() {
         this.tween.resume();
-        //headParticlesEmitter.on = true;
 
         setTimeout(() => {
             this.tween.pause();
-            //headParticlesEmitter.on = false;
-        }, 1000)
+        }, 2000)
+    }
+}
+
+class Transition {
+    scene = null;
+    controller = null;
+    origin = null;
+    target = null;
+    element = null;
+
+    constructor(scene, origin, offset, resource) {
+        this.scene = scene;
+        this.origin = origin;
+        this.offset = offset;
+        this.element = this.scene.add.image(this.origin.x, this.origin.y, resource);
+        this.setTweenController();
+    }
+
+    setTweenController() {
+        let tween = this.scene.tweens.add({
+            targets: this.element,
+            props: {
+                x: { value: this.offset.x, duration: 10000, ease: 'Power2' },
+                y: { value: this.offset.y, duration: 12000, ease: 'Sine.easeInOut' },
+            },
+            yoyo: false,
+            repeat: 0,
+            delay: 0,
+            onComplete:  () => {
+                this.scene.nextTransition();
+            }
+        })
+
+        tween.pause();
+
+        this.controller = new TweenController(this, tween);
     }
 }
 export default class KnightScene extends Scene {
-    tweenController = null;
+    transitions = [];
+    transition = null;
 
     constructor() {
         super({ key: 'KnightScene' })
     }
 
     preload() {
-        this.load.image('bg_warrior', bg_warrior)
+        this.load.image('background', background)
         this.load.svg('body', body, { width: 200, height: 200 })
-
-        this.load.spritesheet('head', head, { frameWidth: 200, frameHeight: 200 })
     }
 
     create() {
-        this.add.image(0, 0, 'bg_warrior')
-            .setDisplaySize(window.innerWidth, window.innerHeight)
-            .setOrigin(0, 0)
-
         keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-        this.add.image(200, 600, 'body')
-
-        var head = this.add.sprite(200, 200, 'head')
-
-        //anim head
-        var config = {
-            key: 'alive',
-            frames: this.anims.generateFrameNumbers('head'),
-            frameRate: 30,
-            yoyo: true,
-            repeat: -1
-        };
-
-        /*this.anims.create(config);
-        head.anims.load('alive')
-        head.anims.play('alive')*/
+        this.add.image(0, 0, 'background')
+            .setDisplaySize(window.innerWidth, window.innerHeight)
+            .setOrigin(0, 0)
 
         // Add particles to head
         headParticles = this.add.particles('red');
@@ -80,40 +103,40 @@ export default class KnightScene extends Scene {
             blendMode: 'ADD',
             lifespan: 1000,
             y: 100
-        })
+        });
+
         headParticlesEmitter.startFollow(head);
         headParticlesEmitter.enabled = false
 
-        tween = this.tweens.add({
-            targets: head,
-            props: {
-                x: { value: 600, duration: 3000 },
-                y: { value: 100, duration: 6000 },
-            },
-            ease: 'Sine.easeInOut',
-            yoyo: false,
-            repeat: 0,
-            delay: 0,
-            onComplete: function () {
-                // var parentScene = this.parent.scene
-                // parentScene.scene.start('DragonScene')
-            }
-        })
-
-        tween.pause();
-
-        this.tweenController = new TweenController(this, tween);
+        this._setTransitions();
+        this.nextTransition();
 
         new GameController(this);
     }
 
     update() {
         if (keySpace.isDown) {
-            this.tweenController.pushing();
+            this.transition.controller.pushing();
         }
     }
 
     action() {
-        this.tweenController.pushing();
+        this.transition.controller.pushing();
+    }
+
+    _setTransitions() {
+        this.transitions.push(new Transition(this, POSITIONS.BODY_ORIGIN, POSITIONS.BODY_OFFSET, 'body'));
+        this.transitions.push(new Transition(this, POSITIONS.BODY_ORIGIN, POSITIONS.BODY_OFFSET, 'body'));
+        this.transitions.push(new Transition(this, POSITIONS.BODY_ORIGIN, POSITIONS.BODY_OFFSET, 'body'));
+    }
+
+    nextTransition() {
+        console.log('next')
+        if ( this.transitions.length > 0) {
+            this.transition = this.transitions.shift();
+        }
+        else {
+            console.log('game complete');
+        }
     }
 }

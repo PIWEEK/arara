@@ -9,8 +9,6 @@ import DragonScene from './scenes/DragonScene'
 function launch() {
   new Phaser.Game({
     type: Phaser.AUTO,
-    width: window.innerWidth,
-    height: window.innerHeight,
     scale: {
       scale: 'SHOW_ALL',
       orientation: 'LANDSCAPE'

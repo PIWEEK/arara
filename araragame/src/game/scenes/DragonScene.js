@@ -2,7 +2,7 @@ import { Scene } from 'phaser'
 import GameController from '@/recorder/GameController.js'
 
 // assets
-import background from '@/game/assets/fondo_acuarela.png'
+import background from '@/game/assets/game-background.png'
 import dragon from '@/game/assets/dragon.png'
 import fireballSprite from '@/game/assets/fireball.png'
 import knightSprite from '@/game/assets/knight-animation.png'
