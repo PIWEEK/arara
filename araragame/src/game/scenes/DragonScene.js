@@ -3,9 +3,9 @@ import GameController from '@/recorder/GameController.js'
 
 // assets
 import background from '@/game/assets/game-background.png'
-import dragon from '@/game/assets/dragon.png'
 import fireballSprite from '@/game/assets/fireball.png'
 import knightSprite from '@/game/assets/knight-animation.png'
+import dragonSprite from '@/game/assets/dragon_sprite_gimp.png';
 import hitboxSprite from '@/game/assets/hitbox.png'
 import fireballFX from '@/game/assets/audio/fx/fireball.wav'
 import shieldGuardFX from '@/game/assets/audio/fx/shieldguard.wav'
@@ -19,15 +19,16 @@ const STATES = {
 const POSITIONS = {
     KNIGHT: { x: 800, y: 500 },
     EXPLOSION: { x: 800, y: 580 },
-    HITBOX: { x: 900, y: 600 },
-    FIREBALL: { x: 150, y: 200 },
+    HITBOX: { x: 825, y: 600 },
+    FIREBALL: { x: 450, y: 390 },
     DRAGON: { x: 50, y: 200 }
 }
 
-const COVERTIME = 1500;
-const FIREBALL_FREQUENCY = 4000;
+const COVERTIME = 2000;
+const FIREBALL_FREQUENCY = 6000;
 const FIREBALL_SPEED = 200; // pixels/seconds
 const FIREBALL_ROTATION = -0.706858;
+
 class KnightController {
     scene = null;
     shieldUp = false;
@@ -104,9 +105,11 @@ class FireballFactory {
     scene = null;
     fireballs = [];
     explosion = null;
+    target = null;
 
-    constructor(scene) {
+    constructor(scene, target) {
         this.scene = scene;
+        this.target = target;
         this._setAnimation();
     }
 
@@ -114,7 +117,7 @@ class FireballFactory {
         let fireballConfig = {
             key: 'flame',
             frames: this.scene.anims.generateFrameNumbers('fireball', {frames: [0, 1, 2, 3, 4, 5]}),
-            frameRate: 4,
+            frameRate: 6,
             yoyo: false,
             repeat: 0
         };
@@ -132,7 +135,7 @@ class FireballFactory {
         this.scene.anims.create(explodeConfig);
     }
 
-    throwFireball(target) {
+    throwFireball() {
         let sprite = this.scene.physics.add.sprite(POSITIONS.FIREBALL.x, POSITIONS.FIREBALL.y, 'fireball');
         sprite.setRotation(FIREBALL_ROTATION);
         sprite.anims.load('flame');
@@ -140,8 +143,8 @@ class FireballFactory {
         this.fireballs.push(sprite)
 
         //this.scene.sound.play('fireballFX');
-        this.scene.physics.moveToObject(sprite, target, FIREBALL_SPEED);
-        this.scene.physics.add.overlap(sprite, target, this.scene.fireballCollision, null, this.scene);
+        this.scene.physics.moveToObject(sprite, this.target, FIREBALL_SPEED);
+        this.scene.physics.add.overlap(sprite, this.target, this.scene.fireballCollision, null, this.scene);
     }
 
     destroyFireball(fireball) {
@@ -173,14 +176,60 @@ class FireballFactory {
     }
 }
 
+class DragonController {
+    scene = null;
+    sprite = null;
+    fireballFactory = null;
+    onMovement = false;
+
+    constructor(scene, fireballFactory) {
+        this.scene = scene;
+        this.fireballFactory = fireballFactory;
+        this._setAnimation();
+        this.sprite = this.scene.physics.add.sprite(POSITIONS.DRAGON.x, POSITIONS.DRAGON.y, 'dragon').setOrigin(0,0);
+    }
+
+    _setAnimation() {
+        let config = {
+            key: 'throw',
+            frames: this.scene.anims.generateFrameNumbers('dragon'),
+            frameRate: 2,
+            yoyo: false,
+            repeat: 0,
+            delay: 0,
+        };
+
+        this.scene.anims.create(config);
+    }
+
+    throw() {
+        this.onMovement = true;
+        this.sprite.anims.load('throw');
+
+        this.sprite.on('animationcomplete', () => {
+            if (this.onMovement){
+                this.fireballFactory.throwFireball();
+                this.onMovement = false;
+                this.sprite.anims.playReverse('throw');
+            }
+
+        }, this.scene);
+
+        this.sprite.anims.play('throw');
+    }
+
+
+}
+
 export default class DragonScene extends Scene {
     state = '';
     fireballFactory = null;
     knightController = null;
+    dragonController = null;
+
     controls = {
         keySpace: null
     }
-    gameController = null
 
     constructor() {
         super({ key: 'DragonScene' })
@@ -189,10 +238,10 @@ export default class DragonScene extends Scene {
 
     preload() {
         this.load.image('background', background);
-        this.load.image('dragon', dragon);
         this.load.image('hitbox', hitboxSprite);
         this.load.spritesheet('fireball', fireballSprite, { frameWidth: 165, frameHeight: 335 });
         this.load.spritesheet('knight', knightSprite, { frameWidth: 273, frameHeight: 225 });
+        this.load.spritesheet('dragon', dragonSprite, { frameWidth: 486, frameHeight: 533 });
         this.load.audio('fireballFX', [fireballFX]);
         this.load.audio('shieldGuardFX', [shieldGuardFX]);
         this.gameController = new GameController(this);
@@ -203,9 +252,9 @@ export default class DragonScene extends Scene {
         new GameController(this);
 
         this.add.image(0, 0, 'background').setOrigin(0);
-        this.add.image(POSITIONS.DRAGON.x, POSITIONS.DRAGON.y, 'dragon').setOrigin(0, 0);
         this.knightController = new KnightController(this);
-        this.fireballFactory = new FireballFactory(this);
+        this.fireballFactory = new FireballFactory(this, this.knightController.hitbox);
+        this.dragonController = new DragonController(this, this.fireballFactory);
 
         this.gameController.setPatterns(['ra', 're', 'rá', 'ré']);
 
@@ -213,7 +262,7 @@ export default class DragonScene extends Scene {
 
         setInterval(() => {
             if (this.state == STATES.UNDERFIRE) {
-                this.fireballFactory.throwFireball(this.knightController.hitbox);
+                this.dragonController.throw();
             }
         }, FIREBALL_FREQUENCY);
 
