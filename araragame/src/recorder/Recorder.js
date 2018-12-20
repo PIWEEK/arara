@@ -1,3 +1,5 @@
+const config = require('@/config/config.json')
+
 export default class Recorder {
   // options
   segmentSize = null
@@ -82,7 +84,7 @@ export default class Recorder {
     })
 
     function connect(onMessage) {
-      var ws = new WebSocket("ws://localhost:8765")
+      var ws = new WebSocket(`ws://${config.TTS_HOST}:${config.TTS_PORT}`)
       ws.binaryType = "arraybuffer"
       ws.onmessage = ((e) => {
         var data = JSON.parse(e.data)

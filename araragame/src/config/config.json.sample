@@ -1,0 +1,4 @@
+{
+  "TTS_HOST": "localhost",
+  "TTS_PORT": "8765"
+}
