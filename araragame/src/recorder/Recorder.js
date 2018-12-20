@@ -55,7 +55,6 @@ export default class Recorder {
       
       if (gain > this.speakingDetectionLevel) {
         this.speakingSegments++
-        console.log('speaking')
       } else if (this.speakingSegments > 0) {
         this.muteSegments++
       } else return
