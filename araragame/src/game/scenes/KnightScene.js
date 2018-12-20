@@ -4,28 +4,31 @@ import GameController from '@/recorder/GameController.js'
 
 import background from '@/game/assets/background.png'
 import shape from '@/game/assets/knight_scene/shape.png'
+import sparks from '@/game/assets/knight_scene/sparks.png'
 import head from '@/game/assets/knight_scene/helmet.png'
-import headSprite from '@/game/assets/head_sprite.png'
+import face_smile from '@/game/assets/knight_scene/face_smile.png'
+import face_sleep from '@/game/assets/knight_scene/face_sleep.png'
 import body from '@/game/assets/knight_scene/body.png'
 import legs from '@/game/assets/knight_scene/legs.png'
 import armor from '@/game/assets/knight_scene/armor.png'
 import shield from '@/game/assets/knight_scene/shield.png'
-import shieldSprite from '@/game/assets/shield_sprite.png'
+import shield_blue from '@/game/assets/knight_scene/shield_blue.png'
 
 const POSITIONS = {
-    HEAD_ORIGIN: {x: 200, y: 200},
-    BODY_ORIGIN: {x: 200, y: 100},
-    LEGS_ORIGIN: {x: 350, y: 150},
-    ARMOR_ORIGIN: {x: 400, y: 300},
-    SHIELD_ORIGIN: {x: 205, y: 320},
+    HEAD_ORIGIN: { x: 200, y: 200 },
+    BODY_ORIGIN: { x: 200, y: 100 },
+    LEGS_ORIGIN: { x: 350, y: 150 },
+    ARMOR_ORIGIN: { x: 400, y: 300 },
+    SHIELD_ORIGIN: { x: 205, y: 320 },
 
-    HEAD_OFFSET: {x: 673, y: 50},
-    BODY_OFFSET: {x: 606, y: 320},
-    LEGS_OFFSET: {x: 666, y: 490},
-    ARMOR_OFFSET: {x: 660, y: 325},
-    SHIELD_OFFSET: {x: 520, y: 270},
+    HEAD_OFFSET: { x: 673, y: 50 },
+    BODY_OFFSET: { x: 606, y: 320 },
+    LEGS_OFFSET: { x: 666, y: 490 },
+    ARMOR_OFFSET: { x: 660, y: 325 },
+    SHIELD_OFFSET: { x: 520, y: 270 },
 
-    SHAPE: {x: 605, y:49},
+    SHAPE: { x: 605, y: 49 },
+    SPARKS: { x: 440, y: 49 },
 }
 
 let keySpace;
@@ -62,7 +65,7 @@ class Transition {
         this.scene = scene;
         this.origin = origin;
         this.offset = offset;
-        this.element = this.scene.add.image(this.origin.x, this.origin.y, resource).setOrigin(0).setDepth(depth).setRotation(depth*5);
+        this.element = this.scene.add.image(this.origin.x, this.origin.y, resource).setOrigin(0).setDepth(depth).setRotation(depth * 5);
         this.setTweenController(resource);
     }
 
@@ -95,18 +98,18 @@ class Transition {
                         break
                 }
             },
-            onComplete:  () => {
-                /*if (resource === 'head') {
+            onComplete: () => {
+                if (resource === 'head') {
                     this.element.destroy(true)
-                    headSpriteAnim = this.scene.add.sprite(POSITIONS.HEAD_OFFSET.x, POSITIONS.HEAD_OFFSET.y, 'headSprite')
-                        .setOrigin(0,0)
+                    headSpriteAnim = this.scene.add.sprite(POSITIONS.HEAD_OFFSET.x, POSITIONS.HEAD_OFFSET.y, 'head')
+                        .setOrigin(0, 0)
                         .setDepth(2)
                 } else if (resource === 'shield') {
                     this.element.destroy(true)
-                    shieldSpriteAnim = this.scene.add.sprite(POSITIONS.SHIELD_OFFSET.x, POSITIONS.SHIELD_OFFSET.y, 'shieldSprite')
-                        .setOrigin(0,0)
+                    shieldSpriteAnim = this.scene.add.sprite(POSITIONS.SHIELD_OFFSET.x, POSITIONS.SHIELD_OFFSET.y, 'shield')
+                        .setOrigin(0, 0)
                         .setDepth(5)
-                }*/
+                }
                 this.scene.nextTransition();
             }
         })
@@ -121,13 +124,14 @@ export default class KnightScene extends Scene {
     transitions = [];
     transition = null;
     patterns = [
-      ['ara'],
-      ['ere'],
-      ['iri'],
-      ['oro'],
-      ['uru']
+        ['ara'],
+        ['ere'],
+        ['iri'],
+        ['oro'],
+        ['uru']
     ]
     pattern = null;
+    sparksImage =  null;
 
     constructor() {
         super({ key: 'KnightScene' })
@@ -137,13 +141,14 @@ export default class KnightScene extends Scene {
         this.load.image('background', background);
         this.load.image('shape', shape);
         this.load.image('head', head);
+        this.load.image('face_smile', face_smile);
+        this.load.image('face_sleep', face_sleep);
         this.load.image('body', body);
         this.load.image('legs', legs);
         this.load.image('armor', armor);
         this.load.image('shield', shield);
-
-        this.load.spritesheet('headSprite', headSprite, { frameWidth: 363, frameHeight: 476 });
-        this.load.spritesheet('shieldSprite', shieldSprite, { frameWidth: 401, frameHeight: 632 });
+        this.load.image('shield_blue', shield_blue);
+        this.load.image('sparks', sparks);
 
         this.gameController = new GameController(this);
     }
@@ -153,10 +158,16 @@ export default class KnightScene extends Scene {
 
         this.add.image(0, 0, 'background').setOrigin(0);
         this.add.image(POSITIONS.SHAPE.x, POSITIONS.SHAPE.y, 'shape').setOrigin(0);
+        this.sparksImage = this.add.image(POSITIONS.SPARKS.x, POSITIONS.SPARKS.y, 'sparks')
+            .setOrigin(0)
+            .setVisible(false);
 
         let configShield = {
             key: 'shieldAlive',
-            frames: this.anims.generateFrameNumbers('shieldSprite', { frames: [0, 1, 2, 3] }),
+            frames: [
+                { key: 'shield' },
+                { key: 'shield_blue' },
+            ],
             frameRate: 6,
             yoyo: false,
             repeat: 0,
@@ -166,7 +177,11 @@ export default class KnightScene extends Scene {
 
         let configHead = {
             key: 'headAlive',
-            frames: this.anims.generateFrameNumbers('headSprite', { frames: [0, 1, 2, 3] }),
+            frames: [
+                { key: 'head' },
+                { key: 'face_sleep' },
+                { key: 'face_smile' },
+            ],
             frameRate: 6,
             yoyo: false,
             repeat: 0
@@ -205,15 +220,19 @@ export default class KnightScene extends Scene {
         }
         else {
 
-            //shieldSpriteAnim.anims.load('shieldAlive')
-            //shieldSpriteAnim.anims.play('shieldAlive')
+            shieldSpriteAnim.anims.load('shieldAlive')
+            shieldSpriteAnim.anims.play('shieldAlive')
 
-            //headSpriteAnim.anims.load('headAlive')
-            //headSpriteAnim.anims.play('headAlive')
+            headSpriteAnim.anims.load('headAlive')
 
-            setTimeout( () => {
+            headSpriteAnim.on('animationcomplete', () => {
+                this.sparksImage.setVisible(true);
+            }, this);
+
+            headSpriteAnim.anims.play('headAlive')
+
+            setTimeout(() => {
                 this.scene.start('DragonScene');
-                console.log('conseguido');
             }, 3000);
 
             console.log('game complete');
