@@ -15,6 +15,9 @@ def response(trasncription, error=None):
 
 
 async def listen(websocket, _):
+    print('Connected..')
+    if settings.DEBUG:
+        print('Debug activated')
     frame_data = []
     stt = speechtotext.SpeechToText()
     while True:
