@@ -1,4 +1,5 @@
 import random
+import time
 
 import speech_recognition as sr
 
@@ -11,6 +12,7 @@ class RecognitionException(Exception):
 
 def get_recognition_sample():
     options = ['arararara', 'tarara', 'para', 'hada', 'cada', None]
+    time.sleep(1)
     return random.choice(options)
 
 
