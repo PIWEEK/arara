@@ -33,7 +33,7 @@ export default class Recorder {
   }
   _initializeProcesor() {
     this.recorder.onaudioprocess = ((e) => {
-      if (!this.recording) return;
+      if (!this.recording || !this.connected) return;
       const input = event.inputBuffer.getChannelData(0);
       let i;
       let sum = 0.0;
@@ -58,24 +58,24 @@ export default class Recorder {
   }
 
   _initializeSocket() {
-    this.ws = new WebSocket("ws://localhost:8765")
-    this.ws.binaryType = "arraybuffer"
-
-    this.ws.onmessage = ((e) => {
-      if (e.data == 'connected') {
-        console.log(e.data)
-        this.connected = true
-      } else {
-        this.onTalk(e.data)
-      }
+    this.ws = connect(this.onTalk)
+    this.ws.onopen = ((e) => {
+      setInterval(() => {
+        this.connected = (this.ws.readyState == 1)
+        if (!this.connected) { 
+          this.ws = connect(this.onTalk)
+        }
+      }, 1000);
     })
 
-    this.ws.onclose = ((e) => {
-      if (e.data == 'connected') {
-        console.log('Socket closed')
-        this.connected = false
-      }
-    })
+    function connect(onMessage) {
+      var ws = new WebSocket("ws://localhost:8765")
+      ws.binaryType = "arraybuffer"
+      ws.onmessage = ((e) => {
+        onMessage(e.data)
+      })
+      return ws
+    }
   }
 
   startRecording() {
