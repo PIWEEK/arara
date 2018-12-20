@@ -114,7 +114,7 @@ class FireballFactory {
         let fireballConfig = {
             key: 'flame',
             frames: this.scene.anims.generateFrameNumbers('fireball', {frames: [0, 1, 2, 3, 4, 5]}),
-            frameRate: 6,
+            frameRate: 4,
             yoyo: false,
             repeat: 0
         };
