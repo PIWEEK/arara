@@ -98,13 +98,13 @@ class Transition {
             onComplete:  () => {
                 if (resource === 'head') {
                     this.element.destroy(true)
-                    headSpriteAnim = this.scene.physics.add.sprite(POSITIONS.HEAD_OFFSET.x, POSITIONS.HEAD_OFFSET.y, 'headSprite')
+                    headSpriteAnim = this.scene.add.sprite(POSITIONS.HEAD_OFFSET.x, POSITIONS.HEAD_OFFSET.y, 'headSprite')
                         .setOrigin(0,0)
                         .setScale(0.57)
                         .setDepth(2)
                 } else if (resource === 'shield') {
                     this.element.destroy(true)
-                    shieldSpriteAnim = this.scene.physics.add.sprite(POSITIONS.SHIELD_OFFSET.x, POSITIONS.SHIELD_OFFSET.y, 'shieldSprite')
+                    shieldSpriteAnim = this.scene.add.sprite(POSITIONS.SHIELD_OFFSET.x, POSITIONS.SHIELD_OFFSET.y, 'shieldSprite')
                         .setOrigin(0,0)
                         .setScale(0.57)
                         .setDepth(5)
@@ -135,14 +135,34 @@ export default class KnightScene extends Scene {
         this.load.image('armor', armor, { width: 200, height: 200 })
         this.load.image('shield', shield, { width: 200, height: 200 })
 
-        this.load.spritesheet('headSprite', headSprite, { frameWidth: 463, frameHeight: 476 });
-        this.load.spritesheet('shieldSprite', shieldSprite, { frameWidth: 439, frameHeight: 632 });
+        this.load.spritesheet('headSprite', headSprite, { frameWidth: 363, frameHeight: 476 });
+        this.load.spritesheet('shieldSprite', shieldSprite, { frameWidth: 401, frameHeight: 632 });
     }
 
     create() {
         keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
         this.add.image(0, 0, 'background').setOrigin(0).setScale(0.57)
+
+        let configShield = {
+            key: 'shieldAlive',
+            frames: this.anims.generateFrameNumbers('shieldSprite', { frames: [0, 1, 2, 3] }),
+            frameRate: 6,
+            yoyo: false,
+            repeat: 0,
+        }
+
+        this.anims.create(configShield)
+
+        let configHead = {
+            key: 'headAlive',
+            frames: this.anims.generateFrameNumbers('headSprite', { frames: [0, 1, 2, 3] }),
+            frameRate: 6,
+            yoyo: false,
+            repeat: 0
+        }
+
+        this.anims.create(configHead)
 
         // Add particles to head
         // headParticles = this.add.particles('red');
@@ -187,29 +207,12 @@ export default class KnightScene extends Scene {
             this.transition = this.transitions.shift();
         }
         else {
-            let configHead = {
-                key: 'headAlive',
-                frames: this.anims.generateFrameNumbers('headSprite', { frames: [0, 1, 2] }),
-                frameRate: 6,
-                yoyo: false,
-                repeat: 0,
-                delay: 0,
-            }
 
-            let configShield = {
-                key: 'shieldAlive',
-                frames: this.anims.generateFrameNumbers('shieldSprite', { frames: [0, 1] }),
-                frameRate: 6,
-                yoyo: false,
-                repeat: 0,
-                delay: 0,
-            }
-
-            this.anims.create(configHead)
-            this.anims.create(configShield)
-
-            headSpriteAnim.anims.play('headAlive')
+            shieldSpriteAnim.anims.load('shieldAlive')
             shieldSpriteAnim.anims.play('shieldAlive')
+
+            headSpriteAnim.anims.load('headAlive')
+            headSpriteAnim.anims.play('headAlive')
 
             console.log('game complete');
         }
