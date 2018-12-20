@@ -88,7 +88,7 @@ class KnightController {
     }
 
     block() {
-        this.scene.sound.play('shieldGuardFX');
+        //this.scene.sound.play('shieldGuardFX');
     }
 
     restart() {
@@ -125,7 +125,7 @@ class FireballFactory {
         sprite.anims.play('flame');
         this.fireballs.push(sprite)
 
-        this.scene.sound.play('fireballFX');
+        //this.scene.sound.play('fireballFX');
         this.scene.physics.moveToObject(sprite, target, this.speed);
         this.scene.physics.add.overlap(sprite, target, this.scene.fireballCollision, null, this.scene);
     }
