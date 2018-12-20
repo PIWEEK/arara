@@ -2,7 +2,7 @@ import { Scene } from 'phaser'
 import GameController from '@/recorder/GameController.js'
 
 // assets
-import background from '@/game/assets/fondo_acuarela.png'
+import background from '@/game/assets/game-background.png'
 import dragon from '@/game/assets/dragon.png'
 import fireballSprite from '@/game/assets/fireball.png'
 import knightSprite from '@/game/assets/knight-animation.png'
@@ -88,7 +88,7 @@ class KnightController {
     }
 
     block() {
-        this.scene.sound.play('shieldGuardFX');
+        //this.scene.sound.play('shieldGuardFX');
     }
 
     restart() {
@@ -125,7 +125,7 @@ class FireballFactory {
         sprite.anims.play('flame');
         this.fireballs.push(sprite)
 
-        this.scene.sound.play('fireballFX');
+        //this.scene.sound.play('fireballFX');
         this.scene.physics.moveToObject(sprite, target, this.speed);
         this.scene.physics.add.overlap(sprite, target, this.scene.fireballCollision, null, this.scene);
     }
