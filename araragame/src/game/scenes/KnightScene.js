@@ -63,7 +63,7 @@ class Transition {
         this.scene = scene;
         this.origin = origin;
         this.offset = offset;
-        this.element = this.scene.add.image(this.origin.x, this.origin.y, resource).setOrigin(0).setScale(0.57).setDepth(depth).setRotation(depth*5);
+        this.element = this.scene.add.image(this.origin.x, this.origin.y, resource).setOrigin(0).setDepth(depth).setRotation(depth*5);
         this.setTweenController(resource);
     }
 
@@ -101,13 +101,11 @@ class Transition {
                     this.element.destroy(true)
                     headSpriteAnim = this.scene.add.sprite(POSITIONS.HEAD_OFFSET.x, POSITIONS.HEAD_OFFSET.y, 'headSprite')
                         .setOrigin(0,0)
-                        .setScale(0.57)
                         .setDepth(2)
                 } else if (resource === 'shield') {
                     this.element.destroy(true)
                     shieldSpriteAnim = this.scene.add.sprite(POSITIONS.SHIELD_OFFSET.x, POSITIONS.SHIELD_OFFSET.y, 'shieldSprite')
                         .setOrigin(0,0)
-                        .setScale(0.57)
                         .setDepth(5)
                 }
                 this.scene.nextTransition();
