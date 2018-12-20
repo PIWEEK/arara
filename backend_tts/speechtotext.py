@@ -13,7 +13,9 @@ class RecognitionException(Exception):
 def get_recognition_sample():
     options = ['arararara', 'tarara', 'para', 'hada', 'cada',
                'erererere', 'terere', 'res', 'haré', 'arre',
-               None]
+               None, 'arararararararara', 'ereererererererere',
+               'iririririiririri', 'oroorororororororo',
+               'urururururururururuurur', 'ra', 're']
     time.sleep(1)
     return random.choice(options)
 
