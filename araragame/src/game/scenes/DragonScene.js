@@ -173,7 +173,8 @@ export default class DragonScene extends Scene {
 
     create() {
         this.controls.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        new GameController(this);
+        var pattern = 'ra'
+        new GameController(this, pattern);
         this.add.image(0, 0, 'background').setOrigin(0, 0);
         this.add.image(POSITIONS.DRAGON.x, POSITIONS.DRAGON.y, 'dragon').setOrigin(0, 0);
         this.knightController = new KnightController(this);

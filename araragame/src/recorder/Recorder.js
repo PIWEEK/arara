@@ -61,8 +61,7 @@ export default class Recorder {
       } else return
 
       this.ws.send(convertoFloat32ToInt16(input))
-      
-      console.log(this.muteSegments + this.speakingSegments)
+
       if ((this.muteSegments + this.speakingSegments) >= this.batchNumSegments) {
         this.ws.send('transcribe')
         this.muteSegments = 0
@@ -87,7 +86,8 @@ export default class Recorder {
       var ws = new WebSocket("ws://localhost:8765")
       ws.binaryType = "arraybuffer"
       ws.onmessage = ((e) => {
-        onMessage(e.data)
+        var data = JSON.parse(e.data)
+        onMessage(data.transcription || '')
       })
       return ws
     }
