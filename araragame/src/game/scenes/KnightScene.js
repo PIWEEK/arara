@@ -4,18 +4,20 @@ import GameController from '@/recorder/GameController.js'
 
 import background from '@/game/assets/bg_warrior.png'
 import head from '@/game/assets/head.png'
+import headSprite from '@/game/assets/head_sprite.png'
 import body from '@/game/assets/body.png'
 import legs from '@/game/assets/legs.png'
 import armor from '@/game/assets/armor.png'
 import shield from '@/game/assets/shield.png'
+import shieldSprite from '@/game/assets/shield_sprite.png'
 import stick from '@/game/assets/stick.png'
 
 const POSITIONS = {
     HEAD_ORIGIN: {x: 200, y: 200},
-    BODY_ORIGIN: {x: 200, y: 200},
-    LEGS_ORIGIN: {x: 200, y: 200},
-    ARMOR_ORIGIN: {x: 200, y: 200},
-    SHIELD_ORIGIN: {x: 200, y: 200},
+    BODY_ORIGIN: {x: 200, y: 100},
+    LEGS_ORIGIN: {x: 350, y: 150},
+    ARMOR_ORIGIN: {x: 400, y: 300},
+    SHIELD_ORIGIN: {x: 205, y: 320},
 
     HEAD_OFFSET: {x: 669, y: 62},
     BODY_OFFSET: {x: 605, y: 325},
@@ -25,12 +27,11 @@ const POSITIONS = {
 }
 
 let keySpace;
+let headSpriteAnim;
+let shieldSpriteAnim;
 let tween;
 let headParticles;
 let headParticlesEmitter;
-
-
-
 
 class TweenController {
     scene = null;
@@ -57,25 +58,57 @@ class Transition {
     target = null;
     element = null;
 
-    constructor(scene, origin, offset, resource) {
+    constructor(scene, origin, offset, resource, depth) {
         this.scene = scene;
         this.origin = origin;
         this.offset = offset;
-        this.element = this.scene.add.image(this.origin.x, this.origin.y, resource).setOrigin(0).setScale(0.57);
-        this.setTweenController();
+        this.element = this.scene.add.image(this.origin.x, this.origin.y, resource).setOrigin(0).setScale(0.57).setDepth(depth).setRotation(depth*5);
+        this.setTweenController(resource);
     }
 
-    setTweenController() {
+    setTweenController(resource) {
         let tween = this.scene.tweens.add({
             targets: this.element,
             props: {
-                x: { value: this.offset.x, duration: 1000, ease: 'Sine.linear' },
-                y: { value: this.offset.y, duration: 1000, ease: 'Sine.linear' },
+                x: { value: this.offset.x, duration: 1400, ease: 'Power4' },
+                y: { value: this.offset.y, duration: 800, ease: 'Power4' },
             },
             yoyo: false,
             repeat: 0,
             delay: 0,
+            onUpdate: () => {
+                switch (resource) {
+                    case 'legs':
+                        this.element.setDepth(1).setRotation(0)
+                        break
+                    case 'head':
+                        this.element.setDepth(2).setRotation(0)
+                        break
+                    case 'body':
+                        this.element.setDepth(3).setRotation(0)
+                        break
+                    case 'armor':
+                        this.element.setDepth(4).setRotation(0)
+                        break
+                    case 'shield':
+                        this.element.setDepth(5).setRotation(0)
+                        break
+                }
+            },
             onComplete:  () => {
+                if (resource === 'head') {
+                    this.element.destroy(true)
+                    headSpriteAnim = this.scene.physics.add.sprite(POSITIONS.HEAD_OFFSET.x, POSITIONS.HEAD_OFFSET.y, 'headSprite')
+                        .setOrigin(0,0)
+                        .setScale(0.57)
+                        .setDepth(2)
+                } else if (resource === 'shield') {
+                    this.element.destroy(true)
+                    shieldSpriteAnim = this.scene.physics.add.sprite(POSITIONS.SHIELD_OFFSET.x, POSITIONS.SHIELD_OFFSET.y, 'shieldSprite')
+                        .setOrigin(0,0)
+                        .setScale(0.57)
+                        .setDepth(5)
+                }
                 this.scene.nextTransition();
             }
         })
@@ -85,6 +118,7 @@ class Transition {
         this.controller = new TweenController(this, tween);
     }
 }
+
 export default class KnightScene extends Scene {
     transitions = [];
     transition = null;
@@ -100,6 +134,9 @@ export default class KnightScene extends Scene {
         this.load.image('legs', legs, { width: 200, height: 200 })
         this.load.image('armor', armor, { width: 200, height: 200 })
         this.load.image('shield', shield, { width: 200, height: 200 })
+
+        this.load.spritesheet('headSprite', headSprite, { frameWidth: 463, frameHeight: 476 });
+        this.load.spritesheet('shieldSprite', shieldSprite, { frameWidth: 439, frameHeight: 632 });
     }
 
     create() {
@@ -137,11 +174,11 @@ export default class KnightScene extends Scene {
     }
 
     _setTransitions() {
-        this.transitions.push(new Transition(this, POSITIONS.HEAD_ORIGIN, POSITIONS.HEAD_OFFSET, 'head'));
-        this.transitions.push(new Transition(this, POSITIONS.BODY_ORIGIN, POSITIONS.BODY_OFFSET, 'body'));
-        this.transitions.push(new Transition(this, POSITIONS.LEGS_ORIGIN, POSITIONS.LEGS_OFFSET, 'legs'));
-        this.transitions.push(new Transition(this, POSITIONS.ARMOR_ORIGIN, POSITIONS.ARMOR_OFFSET, 'armor'));
-        this.transitions.push(new Transition(this, POSITIONS.SHIELD_ORIGIN, POSITIONS.SHIELD_OFFSET, 'shield'));
+        this.transitions.push(new Transition(this, POSITIONS.HEAD_ORIGIN, POSITIONS.HEAD_OFFSET, 'head', 5));
+        this.transitions.push(new Transition(this, POSITIONS.BODY_ORIGIN, POSITIONS.BODY_OFFSET, 'body', 4));
+        this.transitions.push(new Transition(this, POSITIONS.LEGS_ORIGIN, POSITIONS.LEGS_OFFSET, 'legs', 3));
+        this.transitions.push(new Transition(this, POSITIONS.ARMOR_ORIGIN, POSITIONS.ARMOR_OFFSET, 'armor', 2));
+        this.transitions.push(new Transition(this, POSITIONS.SHIELD_ORIGIN, POSITIONS.SHIELD_OFFSET, 'shield', 1));
     }
 
     nextTransition() {
@@ -150,6 +187,30 @@ export default class KnightScene extends Scene {
             this.transition = this.transitions.shift();
         }
         else {
+            let configHead = {
+                key: 'headAlive',
+                frames: this.anims.generateFrameNumbers('headSprite', { frames: [0, 1, 2] }),
+                frameRate: 6,
+                yoyo: false,
+                repeat: 0,
+                delay: 0,
+            }
+
+            let configShield = {
+                key: 'shieldAlive',
+                frames: this.anims.generateFrameNumbers('shieldSprite', { frames: [0, 1] }),
+                frameRate: 6,
+                yoyo: false,
+                repeat: 0,
+                delay: 0,
+            }
+
+            this.anims.create(configHead)
+            this.anims.create(configShield)
+
+            headSpriteAnim.anims.play('headAlive')
+            shieldSpriteAnim.anims.play('shieldAlive')
+
             console.log('game complete');
         }
     }
