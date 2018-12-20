@@ -1,5 +1,4 @@
 import { Scene } from 'phaser'
-import sky from '@/game/assets/sky.png'
 import testButton from '@/game/assets/test-button-min.png'
 
 export default class BootScene extends Scene {
@@ -8,12 +7,10 @@ export default class BootScene extends Scene {
   }
 
   preload () {
-    this.load.image('sky', sky)
     this.load.image('testButton', testButton)
   }
 
   create () {
-    // this.scene.start('SplashScene')
-    this.scene.start('MenuScene');
+    this.scene.start('SplashScene')
   }
 }
