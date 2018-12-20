@@ -1,10 +1,17 @@
-import settings
+import random
 
 import speech_recognition as sr
+
+import settings
 
 
 class RecognitionException(Exception):
     pass
+
+
+def get_recognition_sample():
+    options = ['arararara', 'para', 'hada', None]
+    return random.choice(options)
 
 
 class SpeechToText:
@@ -12,9 +19,10 @@ class SpeechToText:
         self.recognizer = sr.Recognizer()
 
     def recognize(self, audio_data):
-        if settings.PROVIDER == 'sphinx':
-            method = self.recognizer.recognize_sphinx
-        elif settings.PROVIDER == 'google':
+        if settings.DEBUG:
+            return get_recognition_sample()
+
+        if settings.PROVIDER == 'google':
             method = self.recognizer.recognize_google
         else:
             raise LookupError(f'`{settings.PROVIDER}` is not a known provider. '\

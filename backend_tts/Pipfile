@@ -5,7 +5,6 @@ name = "pypi"
 
 [packages]
 speechrecognition = "*"
-pocketsphinx = {editable = true,path = "./pocketsphinx-python"}
 websockets = "*"
 
 [dev-packages]

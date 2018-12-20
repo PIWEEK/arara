@@ -1,7 +1,6 @@
 import os
-import pyaudio
 
-DEBUG = os.environ.get('DEBUG', 'False').lower() in ['true', 'yes']
+DEBUG = os.environ.get('DEBUG', 'True').lower() in ['true', 'yes']
 
 HOST = os.environ.get('TTS_HOST', 'localhost')
 PORT = os.environ.get('TTS_PORT', 8765)
