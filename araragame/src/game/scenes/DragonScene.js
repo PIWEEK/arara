@@ -20,8 +20,8 @@ const POSITIONS = {
     KNIGHT: { x: 800, y: 500 },
     EXPLOSION: { x: 800, y: 580 },
     HITBOX: { x: 825, y: 600 },
-    FIREBALL: { x: 450, y: 390 },
-    DRAGON: { x: 50, y: 200 }
+    DRAGON: { x: 50, y: 190 },
+    FIREBALL: { x: 50+400, y: 190+190 },
 }
 
 const COVERTIME = 2000;
