@@ -12,9 +12,16 @@ class SpeechToText:
         self.recognizer = sr.Recognizer()
 
     def recognize(self, audio_data):
+        if settings.PROVIDER == 'sphinx':
+            method = self.recognizer.recognize_sphinx
+        elif settings.PROVIDER == 'google':
+            method = self.recognizer.recognize_google
+        else:
+            raise LookupError(f'`{settings.PROVIDER}` is not a known provider. '\
+                               ' Choose sphinx or google')
+
         try:
-            transcription = self.recognizer.recognize_sphinx(audio_data,
-                                                             language='es-ES')
+            transcription = method(audio_data, language=settings.LANG)
         except sr.UnknownValueError:
             raise RecognitionException("Could not understand audio")
         except sr.RequestError as e:
