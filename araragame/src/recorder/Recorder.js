@@ -1,15 +1,26 @@
 export default class Recorder {
-  ws = null
-  bufferSize = 2048
-  input = null
-  recorder = null
+  // options
+  segmentSize = null
+  batchNumSegments = null
+  speakingDetectionLevel = null
+  // flags
   recording = false
   connected = false
-  muteCounter = 0
-  speakingCounter = 0
+  // counters
+  muteSegments = 0
+  speakingSegments = 0
+  // resources
+  ws = null
+  input = null
+  recorder = null
+  // events
   onTalk() {}
 
-  constructor() {
+  constructor(options) {
+    this.segmentSize = options.segmentSize || 2048
+    this.batchNumSegments = options.batchNumSegments || 15
+    this.speakingDetectionLevel = options.speakingDetectionLevel || 2
+
     navigator.mediaDevices.getUserMedia({
       audio: true,
       video: false
@@ -23,7 +34,7 @@ export default class Recorder {
     var audioContext = window.AudioContext || window.webkitAudioContext
     var context = new audioContext()
 
-    this.recorder = context.createScriptProcessor(this.bufferSize, 1, 1)
+    this.recorder = context.createScriptProcessor(this.segmentSize, 1, 1)
     this.recorder.connect(context.destination)
 
     this.input = context.createMediaStreamSource(device)
@@ -41,17 +52,21 @@ export default class Recorder {
         sum += input[i] * input[i];
       }
       var gain = Math.sqrt(sum / input.length).toFixed(2) * 100
-      if (gain > 2) {
+      
+      if (gain > this.speakingDetectionLevel) {
+        this.speakingSegments++
         console.log('speaking')
-        this.speakingCounter++
-        this.ws.send(convertoFloat32ToInt16(input))
-      } else if (this.speakingCounter > 0) {
-        this.muteCounter++
-      }
-      if (this.muteCounter == 5 || this.speakingCounter == 20) {
+      } else if (this.speakingSegments > 0) {
+        this.muteSegments++
+      } else return
+
+      this.ws.send(convertoFloat32ToInt16(input))
+      
+      console.log(this.muteSegments + this.speakingSegments)
+      if ((this.muteSegments + this.speakingSegments) >= this.batchNumSegments) {
         this.ws.send('transcribe')
-        this.muteCounter = 0
-        this.speakingCounter = 0
+        this.muteSegments = 0
+        this.speakingSegments = 0
       }
     })
     console.log('Procesor initialized')
