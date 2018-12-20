@@ -3,7 +3,7 @@ import Recorder from './Recorder.js'
 const sceneParams = {
   KnightScene: {
     segmentSize: 2048, // Size of each segment in bytes
-    batchNumSegments: 15, // Num of segments sent for each bacth
+    batchNumSegments: 30, // Num of segments sent for each bacth
     speakingDetectionLevel: 2, // Volume required for voice detection
     continuous: true
   },

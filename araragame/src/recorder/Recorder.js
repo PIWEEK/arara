@@ -54,7 +54,7 @@ export default class Recorder {
         sum += input[i] * input[i];
       }
       var gain = Math.sqrt(sum / input.length).toFixed(2) * 100
-      
+
       if (gain > this.speakingDetectionLevel) {
         this.speakingSegments++
       } else if (this.speakingSegments > 0) {
@@ -86,7 +86,9 @@ export default class Recorder {
     function connect(onMessage) {
       const TTS_HOST = Vue.config.app.VUE_APP_TTS_PORT
       const TTS_PORT = Vue.config.app.VUE_APP_TTS_HOST
-      var ws = new WebSocket(`ws://${TTS_HOST}:${TTS_PORT}`)
+      const TTS_PROTOCOL = Vue.config.app.VUE_APP_TTS_PROTOCOL;
+
+      var ws = new WebSocket(`${TTS_PROTOCOL}://${TTS_HOST}:${TTS_PORT}`);
       ws.binaryType = "arraybuffer"
       ws.onmessage = ((e) => {
         var data = JSON.parse(e.data)
