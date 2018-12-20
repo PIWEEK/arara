@@ -31,7 +31,7 @@ export default class GameController {
 
       if (!spell.length) return
       var matches = this._getMatches(spell);
-      if (matches.length) {
+      if (matches.length > 0) {
         var count = this.continuous ? matches.length : 1
         this.game.action(count)
       }
@@ -49,7 +49,7 @@ export default class GameController {
       if (matches.length == 0) {
         console.log(`SPELL: [INVALID]`)
       }
-      return matches.length
+      return matches
   }
   setPatterns(patterns) {
     console.log(`Valid patterns: ${patterns}`)

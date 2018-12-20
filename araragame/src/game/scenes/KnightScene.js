@@ -43,6 +43,7 @@ class TweenController {
     }
 
     pushing() {
+        console.log('pushing')
         this.tween.resume();
 
         setTimeout(() => {
@@ -122,6 +123,14 @@ class Transition {
 export default class KnightScene extends Scene {
     transitions = [];
     transition = null;
+    patterns = [
+      ['ara'],
+      ['ere'],
+      ['iri'],
+      ['oro'],
+      ['uru']
+    ]
+    pattern = null;
 
     constructor() {
         super({ key: 'KnightScene' })
@@ -137,6 +146,8 @@ export default class KnightScene extends Scene {
 
         this.load.spritesheet('headSprite', headSprite, { frameWidth: 363, frameHeight: 476 });
         this.load.spritesheet('shieldSprite', shieldSprite, { frameWidth: 401, frameHeight: 632 });
+
+        this.gameController = new GameController(this);
     }
 
     create() {
@@ -179,8 +190,6 @@ export default class KnightScene extends Scene {
 
         this._setTransitions();
         this.nextTransition();
-
-        // new GameController(this);
     }
 
     update() {
@@ -203,8 +212,10 @@ export default class KnightScene extends Scene {
 
     nextTransition() {
         console.log('next')
-        if ( this.transitions.length > 0) {
+        if (this.transitions.length > 0) {
             this.transition = this.transitions.shift();
+            this.pattern = this.patterns.shift();
+            this.gameController.setPatterns(this.pattern);
         }
         else {
 
