@@ -13,3 +13,6 @@ FORMAT = os.environ.get('AUDIO_FORMAT', 8)
 CHANNELS = os.environ.get('AUDIO_CHANNELS', 1)
 RATE = os.environ.get('AUDIO_RATE', 44100)
 RECORD_SECONDS = os.environ.get('AUDIO_RECORD_SECONDS', 2)
+AUDIO_STORAGE = os.environ.get('AUDIO_STORAGE', 'False').lower() in ['true', 'yes']
+
+AUDIO_FOLDER_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'audios')
