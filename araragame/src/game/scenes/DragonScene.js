@@ -155,6 +155,7 @@ export default class DragonScene extends Scene {
     controls = {
         keySpace: null
     }
+    gameController = null
 
     constructor() {
         super({ key: 'DragonScene' })
@@ -169,15 +170,17 @@ export default class DragonScene extends Scene {
         this.load.spritesheet('knight', knightSprite, { frameWidth: 273, frameHeight: 225 });
         this.load.audio('fireballFX', [fireballFX]);
         this.load.audio('shieldGuardFX', [shieldGuardFX]);
+        this.gameController = new GameController(this);
     }
 
     create() {
         this.controls.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        new GameController(this);
         this.add.image(0, 0, 'background').setOrigin(0, 0);
         this.add.image(POSITIONS.DRAGON.x, POSITIONS.DRAGON.y, 'dragon').setOrigin(0, 0);
         this.knightController = new KnightController(this);
         this.fireballFactory = new FireballFactory(this);
+
+        this.gameController.setPatterns(['ra', 're', 'rá', 'ré']);
 
         this.restartGame();
 
