@@ -21,7 +21,7 @@ const POSITIONS = {
     EXPLOSION: { x: 800, y: 580 },
     HITBOX: { x: 825, y: 600 },
     DRAGON: { x: 50, y: 190 },
-    FIREBALL: { x: 50+400, y: 190+190 },
+    FIREBALL: { x: 50 + 400, y: 190 + 190 },
 }
 
 const COVERTIME = 2000;
@@ -40,8 +40,8 @@ class KnightController {
         this.shieldUp = false;
         this.scene = scene;
         this._setAnimation();
-        this.sprite = this.scene.physics.add.sprite(POSITIONS.KNIGHT.x, POSITIONS.KNIGHT.y, 'knight').setOrigin(0,0);
-        this.hitbox = this.scene.physics.add.sprite(POSITIONS.HITBOX.x, POSITIONS.HITBOX.y, 'hitbox').setOrigin(0,0);
+        this.sprite = this.scene.physics.add.sprite(POSITIONS.KNIGHT.x, POSITIONS.KNIGHT.y, 'knight').setOrigin(0, 0);
+        this.hitbox = this.scene.physics.add.sprite(POSITIONS.HITBOX.x, POSITIONS.HITBOX.y, 'hitbox').setOrigin(0, 0);
         this.hitbox.setAlpha(0);
         this.restart();
     }
@@ -116,7 +116,7 @@ class FireballFactory {
     _setAnimation() {
         let fireballConfig = {
             key: 'flame',
-            frames: this.scene.anims.generateFrameNumbers('fireball', {frames: [0, 1, 2, 3, 4, 5]}),
+            frames: this.scene.anims.generateFrameNumbers('fireball', { frames: [0, 1, 2, 3, 4, 5] }),
             frameRate: 6,
             yoyo: false,
             repeat: 0
@@ -124,7 +124,7 @@ class FireballFactory {
 
         let explodeConfig = {
             key: 'explode',
-            frames: this.scene.anims.generateFrameNumbers('fireball', {frames: [6]}),
+            frames: this.scene.anims.generateFrameNumbers('fireball', { frames: [6] }),
             frameRate: 6,
             yoyo: false,
             repeat: 0
@@ -186,20 +186,30 @@ class DragonController {
         this.scene = scene;
         this.fireballFactory = fireballFactory;
         this._setAnimation();
-        this.sprite = this.scene.physics.add.sprite(POSITIONS.DRAGON.x, POSITIONS.DRAGON.y, 'dragon').setOrigin(0,0);
+        this.sprite = this.scene.physics.add.sprite(POSITIONS.DRAGON.x, POSITIONS.DRAGON.y, 'dragon').setFrame(1).setOrigin(0, 0);
     }
 
     _setAnimation() {
         let config = {
             key: 'throw',
-            frames: this.scene.anims.generateFrameNumbers('dragon'),
-            frameRate: 2,
+            frames: this.scene.anims.generateFrameNumbers('dragon', { frames: [1, 0, 1, 2] }),
+            frameRate: 4,
+            yoyo: false,
+            repeat: 0,
+            delay: 0,
+        };
+
+        let configBack = {
+            key: 'back',
+            frames: this.scene.anims.generateFrameNumbers('dragon', { frames: [2, 1] }),
+            frameRate: 4,
             yoyo: false,
             repeat: 0,
             delay: 0,
         };
 
         this.scene.anims.create(config);
+        this.scene.anims.create(configBack);
     }
 
     throw() {
@@ -207,10 +217,10 @@ class DragonController {
         this.sprite.anims.load('throw');
 
         this.sprite.on('animationcomplete', () => {
-            if (this.onMovement){
+            if (this.onMovement) {
                 this.fireballFactory.throwFireball();
                 this.onMovement = false;
-                this.sprite.anims.playReverse('throw');
+                this.sprite.anims.play('back');
             }
 
         }, this.scene);
