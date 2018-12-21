@@ -178,6 +178,7 @@ export default class KnightScene extends Scene {
         this.load.image('ororo', ororo);
         this.load.image('ururu', ururu);
 
+        delete this.gameController
         this.gameController = new GameController(this);
     }
 
@@ -317,6 +318,7 @@ export default class KnightScene extends Scene {
             headSpriteAnim.anims.play('headAlive')
 
             setTimeout(() => {
+                this.gameController.destroyRecorder();
                 this.scene.start('DragonScene');
             }, 3000);
 
