@@ -13,6 +13,7 @@ function launch() {
       scale: 'SHOW_ALL',
       orientation: 'LANDSCAPE'
     },
+    transparent: true,
     parent: 'game-container',
     physics: {
       default: 'arcade',
