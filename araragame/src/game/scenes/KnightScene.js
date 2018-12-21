@@ -263,6 +263,7 @@ export default class KnightScene extends Scene {
         }
 
         if (N.isDown) {
+            this.gameController.destroyRecorder();
             this.scene.start('DragonScene');
         }
 
