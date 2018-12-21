@@ -18,7 +18,7 @@ function launch() {
       default: 'arcade',
       arcade: {
         gravity: { y: 0 },
-        debug: true
+        debug: false
       }
     },
     scene: [BootScene, SplashScene, MenuScene, KnightScene, DragonScene]

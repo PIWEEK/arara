@@ -2,7 +2,8 @@ import { Scene } from 'phaser'
 import GameController from '@/recorder/GameController.js'
 
 // assets
-import background from '@/game/assets/background.png'
+import dragonBackground from '@/game/assets/dragon-background.png'
+import backgroundFrame from '@/game/assets/background-frame.png'
 import fireballSprite from '@/game/assets/fireball.png'
 import knightSprite from '@/game/assets/knight-animation.png'
 import dragonSprite from '@/game/assets/dragon_sprite_gimp.png';
@@ -21,8 +22,8 @@ const POSITIONS = {
     KNIGHT: { x: 800, y: 500 },
     EXPLOSION: { x: 800, y: 580 },
     HITBOX: { x: 825, y: 600 },
-    DRAGON: { x: 50, y: 190 },
-    FIREBALL: { x: 50 + 400, y: 190 + 190 },
+    DRAGON: { x: 20, y: 190 },
+    FIREBALL: { x: 20 + 400, y: 190 + 190 },
 }
 
 const COVERTIME = 2000;
@@ -251,7 +252,8 @@ export default class DragonScene extends Scene {
     }
 
     preload() {
-        this.load.image('background', background);
+        this.load.image('dragonBackground', dragonBackground);
+        this.load.image('backgroundFrame', backgroundFrame);
         this.load.image('hitbox', hitboxSprite);
         this.load.spritesheet('fireball', fireballSprite, { frameWidth: 165, frameHeight: 335 });
         this.load.spritesheet('knight', knightSprite, { frameWidth: 273, frameHeight: 225 });
@@ -266,7 +268,8 @@ export default class DragonScene extends Scene {
         this.controls.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.controls.R = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
 
-        this.add.image(0, 0, 'background').setOrigin(0);
+        this.add.image(0, 0, 'dragonBackground').setOrigin(0);
+        this.add.image(0, 0, 'backgroundFrame').setOrigin(0).setDepth(100);
         this.textBox = this.add.text(100, 100, '', { fontSize: '48px', fill: '#000' });
         this.knightController = new KnightController(this);
         this.fireballFactory = new FireballFactory(this, this.knightController.hitbox);
