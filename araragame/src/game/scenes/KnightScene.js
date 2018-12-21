@@ -203,16 +203,16 @@ export default class KnightScene extends Scene {
         this.anims.create(configHead)
 
         // Add particles to wand
-        this.wandArea = this.add.rectangle(215, 610, 60, 60)
+        wandArea = this.add.rectangle(215, 610, 60, 60)
             .setOrigin(0, 0);
 
-        let origin = this.wandArea.getTopLeft();
-        let diamondSource = {
+        let origin = wandArea.getTopLeft();
+        let wandSource = {
             getRandomPoint: (vec) => {
                 do
                 {
-                    var x = Phaser.Math.Between(0, this.wandArea.width);
-                    var y = Phaser.Math.Between(0, this.wandArea.height);
+                    var x = Phaser.Math.Between(0, wandArea.width);
+                    var y = Phaser.Math.Between(0, wandArea.height);
                     var pixel = 50;
                 } while (pixel.alpha < 255);
 
@@ -220,8 +220,8 @@ export default class KnightScene extends Scene {
             }
         };
         
-        this.wandParticles = this.add.particles('flares');
-        this.wandEmitter = this.wandParticles.createEmitter({
+        wandParticles = this.add.particles('flares');
+        wandEmitter = wandParticles.createEmitter({
             x: 0,
             y: 0,
             lifespan: 500,
@@ -229,7 +229,7 @@ export default class KnightScene extends Scene {
             scale: { start: 0, end: 0.25, ease: 'Quad.easeOut' },
             alpha: { start: 1, end: 0, ease: 'Quad.easeIn' },
             blendMode: 'ADD',
-            emitZone: { type: 'random', source: diamondSource },
+            emitZone: { type: 'random', source: wandSource },
             on: false,
         });
 
@@ -244,15 +244,15 @@ export default class KnightScene extends Scene {
 
       if (this.power > 0) {
         this.transition.controller.tween.play();
-        this.wandEmitter.on = true;
+        wandEmitter.on = true;
         this.power -= 1;
 
         if (this.power < 0) {
-            this.power = 0;
+          this.power = 0;
         }
-
+    
         if (this.power == 0) { 
-          this.wandEmitter.on = false;
+          wandEmitter.on = false;
           this.transition.controller.tween.pause();
         }
       }
@@ -274,6 +274,7 @@ export default class KnightScene extends Scene {
     nextTransition() {
         if (this.transitions.length > 0) {
             this.power = 0;
+            wandEmitter.on = false;
             this.transition = this.transitions.shift();
             this.pattern = this.patterns.shift();
             this.gameController.setPatterns(this.pattern);
