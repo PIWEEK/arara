@@ -258,14 +258,13 @@ export default class DragonScene extends Scene {
         this.load.spritesheet('dragon', dragonSprite, { frameWidth: 486, frameHeight: 533 });
         this.load.audio('fireballFX', [fireballFX]);
         this.load.audio('shieldGuardFX', [shieldGuardFX]);
+
         this.gameController = new GameController(this);
     }
 
     create() {
         this.controls.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.controls.R = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
-
-        new GameController(this);
 
         this.add.image(0, 0, 'background').setOrigin(0);
         this.textBox = this.add.text(100, 100, '', { fontSize: '48px', fill: '#000' });

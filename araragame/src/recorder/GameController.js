@@ -23,11 +23,11 @@ export default class GameController {
   constructor(game) {
     this.game = game;
     this.options = sceneParams[game.scene.key]
-    var recorder = new Recorder(this.options)
+    this.recorder = new Recorder(this.options)
 
-    recorder.startRecording()
+    this.recorder.startRecording()
 
-    recorder.onTalk = (spell) => {
+    this.recorder.onTalk = (spell) => {
       console.log(`\nYou said: '${spell || '???'}'`)
 
       if (!spell.length) return
@@ -54,5 +54,8 @@ export default class GameController {
   setPatterns(patterns) {
     console.log(`\n\nValid patterns: ${patterns}\n\n`)
     this.patterns = patterns
+  }
+  destroyRecorder() {
+    this.recorder.stopRecording()
   }
 }
