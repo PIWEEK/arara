@@ -13,6 +13,7 @@ import legs from '@/game/assets/knight_scene/legs.png'
 import armor from '@/game/assets/knight_scene/armor.png'
 import shield from '@/game/assets/knight_scene/shield.png'
 import shield_blue from '@/game/assets/knight_scene/shield_blue.png'
+import stick from '@/game/assets/knight_scene/stick.png'
 
 const POSITIONS = {
     HEAD_ORIGIN: { x: 200, y: 200 },
@@ -150,6 +151,7 @@ export default class KnightScene extends Scene {
         this.load.image('shield', shield);
         this.load.image('shield_blue', shield_blue);
         this.load.image('sparks', sparks);
+        this.load.image('stick', stick);
 
         this.gameController = new GameController(this);
     }
@@ -159,6 +161,7 @@ export default class KnightScene extends Scene {
 
         this.add.image(0, 0, 'background').setOrigin(0);
         this.add.image(POSITIONS.SHAPE.x, POSITIONS.SHAPE.y, 'shape').setOrigin(0);
+        this.add.image(200, 600, 'stick').setOrigin(0);
         this.sparksImage = this.add.image(POSITIONS.SPARKS.x, POSITIONS.SPARKS.y, 'sparks')
             .setOrigin(0)
             .setVisible(false);
