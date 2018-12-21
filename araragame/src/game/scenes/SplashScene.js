@@ -1,7 +1,7 @@
 import { Scene } from 'phaser'
 
 import book from '@/game/assets/book.png'
-import background from '@/game/assets/background.png'
+import bookBackground from '@/game/assets/book-background.png'
 import flaresImg from '@/game/assets/particles/flares.png'
 import flaresJSON from '@/game/assets/particles/flares.json'
 
@@ -12,13 +12,13 @@ export default class SplashScene extends Scene {
   }
 
   preload () {
-    this.load.image('background', background);
+    this.load.image('bookBackground', bookBackground);
     this.load.image('book', book)
     this.load.atlas('flares', flaresImg, flaresJSON)
   }
 
   create () {
-    this.add.image(0, 0, 'background').setOrigin(0, 0)
+    this.add.image(0, 0, 'bookBackground').setOrigin(0, 0)
     this.add.image(252, 80, 'book').setOrigin(0, 0)
 
     let diamondArea = this.add.rectangle(480, 410, 85, 85)
@@ -43,7 +43,7 @@ export default class SplashScene extends Scene {
           return vec.setTo(x + origin.x, y + origin.y);
       }
     };
-    
+
     let particles = this.add.particles('flares');
     particles.createEmitter({
       x: 0,
