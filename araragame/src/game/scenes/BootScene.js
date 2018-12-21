@@ -6,6 +6,6 @@ export default class BootScene extends Scene {
   }
 
   create () {
-    this.scene.start('KnightScene')
+    this.scene.start('SplashScene');
   }
 }
