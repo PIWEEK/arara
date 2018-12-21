@@ -9,7 +9,7 @@ const sceneParams = {
   },
   DragonScene: {
     segmentSize: 2048, // Size of each segment in bytes
-    batchNumSegments: 10, // Num of segments sent for each bacth
+    batchNumSegments: 15, // Num of segments sent for each bacth
     speakingDetectionLevel: 2, // Volume required for voice detection
     continuous: false
   }

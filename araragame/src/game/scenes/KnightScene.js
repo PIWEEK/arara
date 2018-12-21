@@ -89,8 +89,8 @@ class Transition {
         let tween = this.scene.tweens.add({
             targets: this.element,
             props: {
-                x: { value: this.offset.x, duration: 1000 },
-                y: { value: this.offset.y, duration: 1000 },
+                x: { value: this.offset.x, duration: 3000 },
+                y: { value: this.offset.y, duration: 3000 },
             },
             yoyo: false,
             repeat: 0,
