@@ -1,7 +1,7 @@
 import { Scene } from 'phaser'
 
 import book from '@/game/assets/book.png'
-import background from '@/game/assets/game-background.png'
+import background from '@/game/assets/background.png'
 import flaresImg from '@/game/assets/particles/flares.png'
 import flaresJSON from '@/game/assets/particles/flares.json'
 
