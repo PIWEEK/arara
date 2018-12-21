@@ -292,7 +292,7 @@ export default class KnightScene extends Scene {
             headSpriteAnim.anims.play('headAlive')
 
             setTimeout(() => {
-                // this.scene.start('DragonScene');
+                this.scene.start('DragonScene');
             }, 3000);
 
             console.log('game complete');
