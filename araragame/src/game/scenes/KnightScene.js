@@ -14,6 +14,8 @@ import armor from '@/game/assets/knight_scene/armor.png'
 import shield from '@/game/assets/knight_scene/shield.png'
 import shield_blue from '@/game/assets/knight_scene/shield_blue.png'
 import stick from '@/game/assets/knight_scene/stick.png'
+import flaresImg from '@/game/assets/particles/flares.png'
+import flaresJSON from '@/game/assets/particles/flares.json'
 
 const POSITIONS = {
     HEAD_ORIGIN: { x: 200, y: 300 },
@@ -35,6 +37,9 @@ const POSITIONS = {
 let keySpace;
 let headSpriteAnim;
 let shieldSpriteAnim;
+let wandArea;
+let wandParticles;
+let wandEmitter;
 
 class TweenController {
     scene = null;
@@ -154,6 +159,7 @@ export default class KnightScene extends Scene {
         this.load.image('shield_blue', shield_blue);
         this.load.image('sparks', sparks);
         this.load.image('stick', stick);
+        this.load.atlas('flares', flaresImg, flaresJSON)
 
         this.gameController = new GameController(this);
     }
@@ -196,6 +202,37 @@ export default class KnightScene extends Scene {
 
         this.anims.create(configHead)
 
+        // Add particles to wand
+        wandArea = this.add.rectangle(215, 610, 60, 60)
+            .setOrigin(0, 0);
+
+        let origin = wandArea.getTopLeft();
+        let wandSource = {
+            getRandomPoint: (vec) => {
+                do
+                {
+                    var x = Phaser.Math.Between(0, wandArea.width);
+                    var y = Phaser.Math.Between(0, wandArea.height);
+                    var pixel = 50;
+                } while (pixel.alpha < 255);
+
+                return vec.setTo(x + origin.x, y + origin.y);
+            }
+        };
+        
+        wandParticles = this.add.particles('flares');
+        wandEmitter = wandParticles.createEmitter({
+            x: 0,
+            y: 0,
+            lifespan: 500,
+            gravityY: 10,
+            scale: { start: 0, end: 0.25, ease: 'Quad.easeOut' },
+            alpha: { start: 1, end: 0, ease: 'Quad.easeIn' },
+            blendMode: 'ADD',
+            emitZone: { type: 'random', source: wandSource },
+            on: false,
+        });
+
         this._setTransitions();
         this.nextTransition();
     }
@@ -207,8 +244,15 @@ export default class KnightScene extends Scene {
 
       if (this.power > 0) {
         this.transition.controller.tween.play();
+        wandEmitter.on = true;
         this.power -= 1;
-        if (this.power == 0) {
+
+        if (this.power < 0) {
+          this.power = 0;
+        }
+    
+        if (this.power == 0) { 
+          wandEmitter.on = false;
           this.transition.controller.tween.pause();
         }
       }
@@ -230,6 +274,7 @@ export default class KnightScene extends Scene {
     nextTransition() {
         if (this.transitions.length > 0) {
             this.power = 0;
+            wandEmitter.on = false;
             this.transition = this.transitions.shift();
             this.pattern = this.patterns.shift();
             this.gameController.setPatterns(this.pattern);
@@ -248,7 +293,7 @@ export default class KnightScene extends Scene {
             headSpriteAnim.anims.play('headAlive')
 
             setTimeout(() => {
-                // this.scene.start('DragonScene');
+                this.scene.start('DragonScene');
             }, 3000);
 
             console.log('game complete');

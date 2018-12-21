@@ -57,7 +57,7 @@ export default class SplashScene extends Scene {
     });
 
     this.input.keyboard.once('keyup_ENTER', () => {
-        this.scene.start('KnightScene')
+        this.scene.start('SplashScene')
     });
 
   }
