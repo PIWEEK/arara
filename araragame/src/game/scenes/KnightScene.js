@@ -2,7 +2,7 @@ import { Scene } from 'phaser'
 import GameController from '@/recorder/GameController.js'
 
 
-import background from '@/game/assets/background.png'
+import kbackground from '@/game/assets/knight_scene/knight-background.png'
 import shape from '@/game/assets/knight_scene/shape.png'
 import sparks from '@/game/assets/knight_scene/sparks.png'
 import head from '@/game/assets/knight_scene/helmet.png'
@@ -158,7 +158,7 @@ export default class KnightScene extends Scene {
     }
 
     preload() {
-        this.load.image('background', background);
+        this.load.image('kbackground', kbackground);
         this.load.image('shape', shape);
         this.load.image('head', head);
         this.load.image('face_smile', face_smile);
@@ -186,7 +186,7 @@ export default class KnightScene extends Scene {
         keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         N = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.N);
 
-        this.add.image(0, 0, 'background').setOrigin(0);
+        this.add.image(0, 0, 'kbackground').setOrigin(0);
         this.add.image(POSITIONS.SHAPE.x, POSITIONS.SHAPE.y, 'shape').setOrigin(0).setScale(0.75);
         this.add.image(200, 600, 'stick').setOrigin(0);
         this.spell = this.add.image(512, 100, 'arara').setOrigin(0.5, 0.5)
@@ -202,7 +202,7 @@ export default class KnightScene extends Scene {
                 { key: 'shield' },
                 { key: 'shield_blue' },
             ],
-            frameRate: 6,
+            frameRate: 1,
             yoyo: false,
             repeat: 0,
         }
@@ -214,9 +214,12 @@ export default class KnightScene extends Scene {
             frames: [
                 { key: 'head' },
                 { key: 'face_sleep' },
+                { key: 'face_sleep' },
+                { key: 'face_sleep' },
+                { key: 'face_smile' },
                 { key: 'face_smile' },
             ],
-            frameRate: 6,
+            frameRate: 1,
             yoyo: false,
             repeat: 0
         }
@@ -306,23 +309,21 @@ export default class KnightScene extends Scene {
             this.gameController.setPatterns(this.pattern);
         }
         else {
-
+            this.sparksImage.setVisible(true);
             shieldSpriteAnim.anims.load('shieldAlive')
             shieldSpriteAnim.anims.play('shieldAlive')
 
             headSpriteAnim.anims.load('headAlive')
 
             headSpriteAnim.on('animationcomplete', () => {
-                this.sparksImage.setVisible(true);
+                setTimeout(() => {
+                    this.gameController.destroyRecorder();
+                    this.scene.start('DragonScene');
+                }, 2000);
+
             }, this);
 
             headSpriteAnim.anims.play('headAlive')
-
-            setTimeout(() => {
-                this.gameController.destroyRecorder();
-                this.scene.start('DragonScene');
-            }, 3000);
-
             console.log('game complete');
         }
     }

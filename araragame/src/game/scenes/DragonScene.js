@@ -4,6 +4,8 @@ import GameController from '@/recorder/GameController.js'
 // assets
 import dragonBackground from '@/game/assets/dragon-background.png'
 import backgroundFrame from '@/game/assets/background-frame.png'
+import spark from '@/game/assets/spark.png'
+import win from '@/game/assets/win.png'
 import fireballSprite from '@/game/assets/fireball.png'
 import knightSprite from '@/game/assets/knight-animation.png'
 import dragonSprite from '@/game/assets/dragon_sprite_gimp.png';
@@ -239,7 +241,8 @@ export default class DragonScene extends Scene {
     knightController = null;
     dragonController = null;
     blockCounter = 0;
-    textBox = null;
+    points = [];
+    winText = null;
 
     controls = {
         keySpace: null,
@@ -254,6 +257,8 @@ export default class DragonScene extends Scene {
     preload() {
         this.load.image('dragonBackground', dragonBackground);
         this.load.image('backgroundFrame', backgroundFrame);
+        this.load.image('spark', spark);
+        this.load.image('win', win);
         this.load.image('hitbox', hitboxSprite);
         this.load.spritesheet('fireball', fireballSprite, { frameWidth: 165, frameHeight: 335 });
         this.load.spritesheet('knight', knightSprite, { frameWidth: 273, frameHeight: 225 });
@@ -270,7 +275,14 @@ export default class DragonScene extends Scene {
 
         this.add.image(0, 0, 'dragonBackground').setOrigin(0);
         this.add.image(0, 0, 'backgroundFrame').setOrigin(0).setDepth(100);
-        this.textBox = this.add.text(100, 100, '', { fontSize: '48px', fill: '#000' });
+        this.winText = this.add.image(512, 140, 'win').setOrigin(0.5).setDepth(100).setVisible(false);
+
+        this.points.push(this.add.image(250, 50, 'spark').setOrigin(0).setDepth(100).setVisible(true));
+        this.points.push(this.add.image(200, 50, 'spark').setOrigin(0).setDepth(100).setVisible(true));
+        this.points.push(this.add.image(150, 50, 'spark').setOrigin(0).setDepth(100).setVisible(true));
+        this.points.push(this.add.image(100, 50, 'spark').setOrigin(0).setDepth(100).setVisible(true));
+        this.points.push(this.add.image(50, 50, 'spark').setOrigin(0).setDepth(100).setVisible(true));
+
         this.knightController = new KnightController(this);
         this.fireballFactory = new FireballFactory(this, this.knightController.hitbox);
         this.dragonController = new DragonController(this, this.fireballFactory);
@@ -321,7 +333,7 @@ export default class DragonScene extends Scene {
 
         if (this.blockCounter == SUCCESS_BLOCKS) {
             this.state = STATES.DONE;
-            this.textBox.setText('WIN!!');
+            this.winText.setVisible(true);
         }
     }
 
@@ -330,16 +342,18 @@ export default class DragonScene extends Scene {
         this.blockCounter = 0;
         this.fireballFactory.restart();
         this.knightController.restart();
+        this.resetPoints();
+        this.winText.setVisible(false);
     }
 
     incrementBlockCount() {
+        this.points[this.blockCounter].setVisible(false);
         this.blockCounter += 1;
-        this.textBox.setText(`${this.blockCounter} paradas`);
     }
 
     resetBlockCOunt() {
         this.blockCounter = 0;
-        this.textBox.setText('0 paradas');
+        this.resetPoints();
     }
 
     action() {
@@ -347,6 +361,12 @@ export default class DragonScene extends Scene {
             if (!this.knightController.shieldUp) {
                 this.knightController.cover();
             }
+        }
+    }
+
+    resetPoints() {
+        for( let point of this.points) {
+            point.setVisible(true);
         }
     }
 }
