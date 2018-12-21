@@ -44,7 +44,7 @@ class TweenController {
         this.tween = tween;
     }
 
-    pushing() {
+  pushing() {
         console.log('pushing')
         this.tween.resume();
 
@@ -73,8 +73,8 @@ class Transition {
         let tween = this.scene.tweens.add({
             targets: this.element,
             props: {
-                x: { value: this.offset.x, duration: 1400, ease: 'Power4' },
-                y: { value: this.offset.y, duration: 800, ease: 'Power4' },
+              x: { value: this.offset.x, duration: 2000},
+              y: { value: this.offset.y, duration: 2000},
             },
             yoyo: false,
             repeat: 0,
@@ -132,6 +132,7 @@ export default class KnightScene extends Scene {
     ]
     pattern = null;
     sparksImage =  null;
+    power = 0;
 
     constructor() {
         super({ key: 'KnightScene' })
@@ -194,13 +195,22 @@ export default class KnightScene extends Scene {
     }
 
     update() {
-        if (keySpace.isDown) {
-            this.transition.controller.pushing();
+      if (keySpace.isDown) {
+          this.transition.controller.pushing();
+      }
+
+      if (this.power > 0) {
+        this.transition.controller.tween.play();
+        this.power -= 1;
+        if (this.power == 0) { 
+          this.transition.controller.tween.pause();
         }
+      }
     }
 
-    action() {
-        this.transition.controller.pushing();
+  action(counter) {
+      console.log(`\n POWER +${(50 * counter)}\n`);
+      this.power += (50 * counter)
     }
 
     _setTransitions() {
@@ -212,8 +222,8 @@ export default class KnightScene extends Scene {
     }
 
     nextTransition() {
-        console.log('next')
         if (this.transitions.length > 0) {
+            this.power = 0;
             this.transition = this.transitions.shift();
             this.pattern = this.patterns.shift();
             this.gameController.setPatterns(this.pattern);

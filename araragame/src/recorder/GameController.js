@@ -17,42 +17,42 @@ const sceneParams = {
 
 export default class GameController {
   game = null
+  options = {}
   patterns = []
 
   constructor(game) {
     this.game = game;
-    var options = sceneParams[game.scene.key]
-    var recorder = new Recorder(options)
+    this.options = sceneParams[game.scene.key]
+    var recorder = new Recorder(this.options)
 
     recorder.startRecording()
 
     recorder.onTalk = (spell) => {
-      console.log(`\nSENTENCE: '${spell || '???'}'`)
+      console.log(`\nYou said: '${spell || '???'}'`)
 
       if (!spell.length) return
-      var matches = this._getMatches(spell);
-      if (matches.length > 0) {
-        var count = this.continuous ? matches.length : 1
+      var numMatches = this._getMatches(spell);
+      if (numMatches > 0) {
+        var count = this.options.continuous ? numMatches : 1
         this.game.action(count)
       }
     };
   }
   _getMatches(spell) {
-      var matches = []
+      var numMatches = 0
       this.patterns.forEach(pattern => {
-        var patterMatches = spell.match(new RegExp(pattern, 'gi')) || []
-        if (patterMatches.length) {
-          console.log(`SPELL: '${pattern}'`)
+        if (this.options.continuous) {
+          var patternMatches = spell.match(new RegExp(pattern, 'gi')) || []
+          numMatches += patternMatches.length;
+        } else { 
+          numMatches += (pattern == spell) ? 1 : 0;
         }
-        matches = matches.concat(patterMatches || []);
       });
-      if (matches.length == 0) {
-        console.log(`SPELL: [INVALID]`)
-      }
-      return matches
+      console.log(`${numMatches} matches`)
+      return numMatches
   }
   setPatterns(patterns) {
-    console.log(`Valid patterns: ${patterns}`)
+    console.log(`\n\nValid patterns: ${patterns}\n\n`)
     this.patterns = patterns
   }
 }
