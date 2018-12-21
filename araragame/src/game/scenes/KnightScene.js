@@ -16,20 +16,20 @@ import shield_blue from '@/game/assets/knight_scene/shield_blue.png'
 import stick from '@/game/assets/knight_scene/stick.png'
 
 const POSITIONS = {
-    HEAD_ORIGIN: { x: 200, y: 200 },
-    BODY_ORIGIN: { x: 200, y: 100 },
-    LEGS_ORIGIN: { x: 350, y: 150 },
-    ARMOR_ORIGIN: { x: 400, y: 300 },
-    SHIELD_ORIGIN: { x: 205, y: 320 },
+    HEAD_ORIGIN: { x: 200, y: 300 },
+    BODY_ORIGIN: { x: 200, y: 350 },
+    LEGS_ORIGIN: { x: 350, y: 350 },
+    ARMOR_ORIGIN: { x: 400, y: 400 },
+    SHIELD_ORIGIN: { x: 205, y: 470 },
 
-    HEAD_OFFSET: { x: 673, y: 50 },
-    BODY_OFFSET: { x: 606, y: 320 },
-    LEGS_OFFSET: { x: 666, y: 490 },
-    ARMOR_OFFSET: { x: 660, y: 325 },
-    SHIELD_OFFSET: { x: 520, y: 270 },
+    HEAD_OFFSET: { x: 700, y: 200 },
+    BODY_OFFSET: { x: 650, y: 405 },
+    LEGS_OFFSET: { x: 695, y: 530 },
+    ARMOR_OFFSET: { x: 695, y: 405 },
+    SHIELD_OFFSET: { x: 570, y: 360 },
 
-    SHAPE: { x: 605, y: 49 },
-    SPARKS: { x: 440, y: 49 },
+    SHAPE: { x: 650, y: 200 },
+    SPARKS: { x: 520, y: 195 },
 }
 
 let keySpace;
@@ -66,7 +66,7 @@ class Transition {
         this.scene = scene;
         this.origin = origin;
         this.offset = offset;
-        this.element = this.scene.add.image(this.origin.x, this.origin.y, resource).setOrigin(0).setDepth(depth).setRotation(depth * 5);
+        this.element = this.scene.add.image(this.origin.x, this.origin.y, resource).setOrigin(0).setDepth(depth).setScale(0.75).setRotation(depth * 5);
         this.setTweenController(resource);
     }
 
@@ -74,8 +74,8 @@ class Transition {
         let tween = this.scene.tweens.add({
             targets: this.element,
             props: {
-              x: { value: this.offset.x, duration: 2000},
-              y: { value: this.offset.y, duration: 2000},
+              x: { value: this.offset.x, duration: 1000},
+              y: { value: this.offset.y, duration: 1000},
             },
             yoyo: false,
             repeat: 0,
@@ -104,11 +104,13 @@ class Transition {
                     this.element.destroy(true)
                     headSpriteAnim = this.scene.add.sprite(POSITIONS.HEAD_OFFSET.x, POSITIONS.HEAD_OFFSET.y, 'head')
                         .setOrigin(0, 0)
+                        .setScale(0.75)
                         .setDepth(2)
                 } else if (resource === 'shield') {
                     this.element.destroy(true)
                     shieldSpriteAnim = this.scene.add.sprite(POSITIONS.SHIELD_OFFSET.x, POSITIONS.SHIELD_OFFSET.y, 'shield')
                         .setOrigin(0, 0)
+                        .setScale(0.75)
                         .setDepth(5)
                 }
                 this.scene.nextTransition();
@@ -160,10 +162,11 @@ export default class KnightScene extends Scene {
         keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
         this.add.image(0, 0, 'background').setOrigin(0);
-        this.add.image(POSITIONS.SHAPE.x, POSITIONS.SHAPE.y, 'shape').setOrigin(0);
+        this.add.image(POSITIONS.SHAPE.x, POSITIONS.SHAPE.y, 'shape').setOrigin(0).setScale(0.75);
         this.add.image(200, 600, 'stick').setOrigin(0);
         this.sparksImage = this.add.image(POSITIONS.SPARKS.x, POSITIONS.SPARKS.y, 'sparks')
             .setOrigin(0)
+            .setScale(0.75)
             .setVisible(false);
 
         let configShield = {
@@ -205,7 +208,7 @@ export default class KnightScene extends Scene {
       if (this.power > 0) {
         this.transition.controller.tween.play();
         this.power -= 1;
-        if (this.power == 0) { 
+        if (this.power == 0) {
           this.transition.controller.tween.pause();
         }
       }
@@ -245,7 +248,7 @@ export default class KnightScene extends Scene {
             headSpriteAnim.anims.play('headAlive')
 
             setTimeout(() => {
-                this.scene.start('DragonScene');
+                // this.scene.start('DragonScene');
             }, 3000);
 
             console.log('game complete');
