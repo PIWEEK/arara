@@ -25,7 +25,17 @@ export default class SplashScene extends Scene {
       .setOrigin(0, 0)
       .setInteractive({useHandCursor: true})
       .on('pointerup', (pointer) => {
-        this.scene.start('KnightScene')
+        let duration = 1200;
+        // this.cameras.main.pan(490, 420, 1000, 'Sine.easeInOut');
+        this.cameras.main.centerOn(520, 450);
+        // this.cameras.main.pan(490, 420, duration);
+        this.cameras.main.zoomTo(3, duration, 'Power2');
+        this.scene.transition({
+          target: 'KnightScene',
+          duration: duration-200,
+          moveBelow: true,
+          data: { x: 400, y: 300 }
+        });
       });
 
     // Add particles to diamond
@@ -55,11 +65,6 @@ export default class SplashScene extends Scene {
       blendMode: 'ADD',
       emitZone: { type: 'random', source: diamondSource }
     });
-
-    this.input.keyboard.once('keyup_ENTER', () => {
-        this.scene.start('SplashScene')
-    });
-
   }
 
   update () {
