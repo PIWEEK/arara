@@ -42,6 +42,7 @@ const POSITIONS = {
 }
 
 let keySpace;
+let N;
 let headSpriteAnim;
 let shieldSpriteAnim;
 let wandArea;
@@ -57,7 +58,7 @@ class TweenController {
         this.tween = tween;
     }
 
-  pushing() {
+    pushing() {
         console.log('pushing')
         this.tween.resume();
 
@@ -88,8 +89,8 @@ class Transition {
         let tween = this.scene.tweens.add({
             targets: this.element,
             props: {
-              x: { value: this.offset.x, duration: 1000},
-              y: { value: this.offset.y, duration: 1000},
+                x: { value: this.offset.x, duration: 1000 },
+                y: { value: this.offset.y, duration: 1000 },
             },
             yoyo: false,
             repeat: 0,
@@ -149,7 +150,7 @@ export default class KnightScene extends Scene {
         ['uru']
     ]
     pattern = null;
-    sparksImage =  null;
+    sparksImage = null;
     power = 0;
 
     constructor() {
@@ -182,6 +183,7 @@ export default class KnightScene extends Scene {
 
     create() {
         keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        N = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.N);
 
         this.add.image(0, 0, 'background').setOrigin(0);
         this.add.image(POSITIONS.SHAPE.x, POSITIONS.SHAPE.y, 'shape').setOrigin(0).setScale(0.75);
@@ -227,8 +229,7 @@ export default class KnightScene extends Scene {
         let origin = wandArea.getTopLeft();
         let wandSource = {
             getRandomPoint: (vec) => {
-                do
-                {
+                do {
                     var x = Phaser.Math.Between(0, wandArea.width);
                     var y = Phaser.Math.Between(0, wandArea.height);
                     var pixel = 50;
@@ -237,7 +238,7 @@ export default class KnightScene extends Scene {
                 return vec.setTo(x + origin.x, y + origin.y);
             }
         };
-        
+
         wandParticles = this.add.particles('flares');
         wandEmitter = wandParticles.createEmitter({
             x: 0,
@@ -256,29 +257,33 @@ export default class KnightScene extends Scene {
     }
 
     update() {
-      if (keySpace.isDown) {
-          this.transition.controller.pushing();
-      }
-
-      if (this.power > 0) {
-        this.transition.controller.tween.play();
-        wandEmitter.on = true;
-        this.power -= 1;
-
-        if (this.power < 0) {
-          this.power = 0;
+        if (keySpace.isDown) {
+            this.transition.controller.pushing();
         }
-    
-        if (this.power == 0) { 
-          wandEmitter.on = false;
-          this.transition.controller.tween.pause();
+
+        if (N.isDown) {
+            this.scene.start('DragonScene');
         }
-      }
+
+        if (this.power > 0) {
+            this.transition.controller.tween.play();
+            wandEmitter.on = true;
+            this.power -= 1;
+
+            if (this.power < 0) {
+                this.power = 0;
+            }
+
+            if (this.power == 0) {
+                wandEmitter.on = false;
+                this.transition.controller.tween.pause();
+            }
+        }
     }
 
-  action(counter) {
-      console.log(`\n POWER +${(50 * counter)}\n`);
-      this.power += (50 * counter)
+    action(counter) {
+        console.log(`\n POWER +${(50 * counter)}\n`);
+        this.power += (50 * counter)
     }
 
     _setTransitions() {
