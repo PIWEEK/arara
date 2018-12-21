@@ -17,6 +17,13 @@ import stick from '@/game/assets/knight_scene/stick.png'
 import flaresImg from '@/game/assets/particles/flares.png'
 import flaresJSON from '@/game/assets/particles/flares.json'
 
+import arara from '@/game/assets/knight_scene/arara.png'
+import erere from '@/game/assets/knight_scene/erere.png'
+import iriri from '@/game/assets/knight_scene/iriri.png'
+import ororo from '@/game/assets/knight_scene/ororo.png'
+import ururu from '@/game/assets/knight_scene/ururu.png'
+
+
 const POSITIONS = {
     HEAD_ORIGIN: { x: 200, y: 300 },
     BODY_ORIGIN: { x: 200, y: 350 },
@@ -66,12 +73,14 @@ class Transition {
     origin = null;
     target = null;
     element = null;
+    spellTexture = null;
 
-    constructor(scene, origin, offset, resource, depth) {
+    constructor(scene, origin, offset, resource, depth, spellTexture) {
         this.scene = scene;
         this.origin = origin;
         this.offset = offset;
         this.element = this.scene.add.image(this.origin.x, this.origin.y, resource).setOrigin(0).setDepth(depth).setScale(0.75).setRotation(depth * 5);
+        this.spellTexture = spellTexture;
         this.setTweenController(resource);
     }
 
@@ -131,6 +140,7 @@ class Transition {
 export default class KnightScene extends Scene {
     transitions = [];
     transition = null;
+    spell = null;
     patterns = [
         ['ara'],
         ['ere'],
@@ -161,6 +171,12 @@ export default class KnightScene extends Scene {
         this.load.image('stick', stick);
         this.load.atlas('flares', flaresImg, flaresJSON)
 
+        this.load.image('arara', arara);
+        this.load.image('erere', erere);
+        this.load.image('iriri', iriri);
+        this.load.image('ororo', ororo);
+        this.load.image('ururu', ururu);
+
         this.gameController = new GameController(this);
     }
 
@@ -170,6 +186,8 @@ export default class KnightScene extends Scene {
         this.add.image(0, 0, 'background').setOrigin(0);
         this.add.image(POSITIONS.SHAPE.x, POSITIONS.SHAPE.y, 'shape').setOrigin(0).setScale(0.75);
         this.add.image(200, 600, 'stick').setOrigin(0);
+        this.spell = this.add.image(512, 100, 'arara').setOrigin(0.5, 0.5)
+
         this.sparksImage = this.add.image(POSITIONS.SPARKS.x, POSITIONS.SPARKS.y, 'sparks')
             .setOrigin(0)
             .setScale(0.75)
@@ -264,11 +282,11 @@ export default class KnightScene extends Scene {
     }
 
     _setTransitions() {
-        this.transitions.push(new Transition(this, POSITIONS.HEAD_ORIGIN, POSITIONS.HEAD_OFFSET, 'head', 5));
-        this.transitions.push(new Transition(this, POSITIONS.BODY_ORIGIN, POSITIONS.BODY_OFFSET, 'body', 4));
-        this.transitions.push(new Transition(this, POSITIONS.LEGS_ORIGIN, POSITIONS.LEGS_OFFSET, 'legs', 3));
-        this.transitions.push(new Transition(this, POSITIONS.ARMOR_ORIGIN, POSITIONS.ARMOR_OFFSET, 'armor', 2));
-        this.transitions.push(new Transition(this, POSITIONS.SHIELD_ORIGIN, POSITIONS.SHIELD_OFFSET, 'shield', 1));
+        this.transitions.push(new Transition(this, POSITIONS.HEAD_ORIGIN, POSITIONS.HEAD_OFFSET, 'head', 5, 'arara'));
+        this.transitions.push(new Transition(this, POSITIONS.BODY_ORIGIN, POSITIONS.BODY_OFFSET, 'body', 4, 'erere'));
+        this.transitions.push(new Transition(this, POSITIONS.LEGS_ORIGIN, POSITIONS.LEGS_OFFSET, 'legs', 3, 'iriri'));
+        this.transitions.push(new Transition(this, POSITIONS.ARMOR_ORIGIN, POSITIONS.ARMOR_OFFSET, 'armor', 2, 'ororo'));
+        this.transitions.push(new Transition(this, POSITIONS.SHIELD_ORIGIN, POSITIONS.SHIELD_OFFSET, 'shield', 1, 'ururu'));
     }
 
     nextTransition() {
@@ -277,6 +295,7 @@ export default class KnightScene extends Scene {
             wandEmitter.on = false;
             this.transition = this.transitions.shift();
             this.pattern = this.patterns.shift();
+            this.spell.setTexture(this.transition.spellTexture);
             this.gameController.setPatterns(this.pattern);
         }
         else {
